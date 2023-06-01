@@ -11,7 +11,6 @@ import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.widget.Button;
-import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
@@ -49,6 +48,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        registerSensor();
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
@@ -82,11 +82,18 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         button.setOnClickListener(buttonListener);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // TODO: VER SI eesto funciona cuando tengamos dos activities
+        unregisterSensor();
+    }
+
     View.OnClickListener buttonListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             //
-            registerSensor();
+
             //Toast.makeText(getApplicationContext(), "Encender el LED", Toast.LENGTH_SHORT).show();
         }
     };
@@ -125,7 +132,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         Log.i("sensor", "register");
     }
 
-    private void unregisterSenser() {
+    private void unregisterSensor() {
+        // TODO: VER SI eesto funciona cuando tengamos dos activities
         sensor.unregisterListener(this);
         Log.i("sensor", "unregister");
     }

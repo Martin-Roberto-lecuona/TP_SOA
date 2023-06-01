@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:showIn="@layout/app_bar_main">
+
+    <fragment
+        android:id="@+id/nav_host_fragment_content_main"
+        android:name="androidx.navigation.fragment.NavHostFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="4dp"
+        app:defaultNavHost="true"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navGraph="@navigation/mobile_navigation" />
+
+    <ImageButton
+        android:id="@+id/imageButton2"
+        android:layout_width="180dp"
+        android:layout_height="50dp"
+        android:layout_marginEnd="16dp"
+        android:rotationY="180"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="?attr/actionModeCloseDrawable"
+        tools:layout_editor_absoluteY="530dp" />
+
+    <ImageButton
+        android:id="@+id/imageButton"
+        android:layout_width="180dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:srcCompat="?attr/actionModeCloseDrawable"
+        tools:layout_editor_absoluteY="530dp" />
+
+    <ImageButton
+        android:id="@+id/imageButton4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="32dp"
+        app:layout_constraintEnd_toStartOf="@+id/imageButton5"
+        app:layout_constraintStart_toStartOf="@+id/nav_host_fragment_content_main"
+        app:srcCompat="@drawable/baseline_flashlight_off_24"
+        tools:layout_editor_absoluteY="392dp" />
+
+    <ImageButton
+        android:id="@+id/imageButton5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="40dp"
+        app:layout_constraintEnd_toStartOf="@+id/AutomaticLights"
+        app:srcCompat="@drawable/baseline_flashlight_on_24"
+        tools:layout_editor_absoluteY="392dp" />
+
+    <Button
+        android:id="@+id/SecurityCam"
+        android:layout_width="190dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="187dp"
+        android:layout_marginTop="156dp"
+        android:layout_marginEnd="34dp"
+        android:text="Security Cam"
+        app:layout_constraintEnd_toEndOf="@+id/nav_host_fragment_content_main"
+        app:layout_constraintStart_toStartOf="@+id/nav_host_fragment_content_main"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/ManualMode"
+        android:layout_width="190dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="187dp"
+        android:layout_marginEnd="34dp"
+        android:layout_marginBottom="56dp"
+        android:text="Manual Mode"
+        app:layout_constraintBottom_toTopOf="@+id/SecurityCam"
+        app:layout_constraintEnd_toEndOf="@+id/nav_host_fragment_content_main"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/nav_host_fragment_content_main"
+        app:layout_constraintTop_toBottomOf="@+id/InfluencerMode" />
+
+    <Button
+        android:id="@+id/InfluencerMode"
+        android:layout_width="190dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="187dp"
+        android:layout_marginEnd="34dp"
+        android:layout_marginBottom="13dp"
+        android:text="Influencer Mode"
+
+        app:layout_constraintBottom_toTopOf="@+id/ManualMode"
+        app:layout_constraintEnd_toEndOf="@+id/nav_host_fragment_content_main"
+        app:layout_constraintStart_toStartOf="@+id/nav_host_fragment_content_main"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="210dp"
+        android:layout_height="30dp"
+        android:text="alguno"
+        android:textSize="20dp"
+        tools:layout_editor_absoluteX="147dp"
+        tools:layout_editor_absoluteY="16dp" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="70dp"
+        android:layout_height="30dp"
+        android:text="Estado actual: "
+        android:textSize="20dp"
+        tools:layout_editor_absoluteX="77dp"
+        tools:layout_editor_absoluteY="16dp" />
+
+    <ProgressBar
+        android:id="@+id/LuzAmbiente"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="44dp"
+        android:layout_height="158dp"
+        android:rotation="-90"
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="180dp" />
+
+    <Switch
+        android:id="@+id/AutomaticLights"
+        android:layout_width="190dp"
+        android:layout_height="50dp"
+        android:layout_marginEnd="28dp"
+        android:text="Automatic lights"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:layout_editor_absoluteY="392dp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

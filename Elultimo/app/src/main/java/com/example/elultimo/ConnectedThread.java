@@ -1,22 +1,23 @@
 package com.example.elultimo;
 
+
 import android.bluetooth.BluetoothSocket;
-import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+//Class that given an open BT Socket will
+//Open, manage and close the data Stream from the Arduino BT device
 public class ConnectedThread extends Thread {
-    private Handler handler;
+
+    private static final String TAG = "FrugalLogs";
     private final BluetoothSocket mmSocket;
     private final InputStream mmInStream;
     private final OutputStream mmOutStream;
-    private final String TAG = "lalala";
-    private byte[] mmBuffer; // mmBuffer store for the stream
+    private String valueRead;
 
     public ConnectedThread(BluetoothSocket socket) {
         mmSocket = socket;
@@ -35,53 +36,47 @@ public class ConnectedThread extends Thread {
         } catch (IOException e) {
             Log.e(TAG, "Error occurred when creating output stream", e);
         }
-
+        //Input and Output streams members of the class
+        //We wont use the Output stream of this project
         mmInStream = tmpIn;
         mmOutStream = tmpOut;
     }
 
-    public void start() {
-        mmBuffer = new byte[1024];
-        int numBytes; // bytes returned from read()
+    public String getValueRead(){
+        return valueRead;
+    }
+
+    public void run() {
+
+        byte[] buffer = new byte[1024];
+        int bytes = 0; // bytes returned from read()
+        int numberOfReadings = 0; //to control the number of readings from the Arduino
 
         // Keep listening to the InputStream until an exception occurs.
-        while (true) {
+        //We just want to get 1 temperature readings from the Arduino
+        while (numberOfReadings < 1) {
             try {
-                // Read from the InputStream.
-                numBytes = mmInStream.read(mmBuffer);
-                // Send the obtained bytes to the UI activity.
-                Message readMsg = handler.obtainMessage(
-                        0, numBytes, -1,
-                        mmBuffer);
-                readMsg.sendToTarget();
+
+                buffer[bytes] = (byte) mmInStream.read();
+                String readMessage;
+                // If I detect a "\n" means I already read a full measurement
+                if (buffer[bytes] == '\n') {
+                    readMessage = new String(buffer, 0, bytes);
+                    Log.e(TAG, readMessage);
+                    //Value to be read by the Observer streamed by the Obervable
+                    valueRead=readMessage;
+                    bytes = 0;
+                    numberOfReadings++;
+                } else {
+                    bytes++;
+                }
+
             } catch (IOException e) {
                 Log.d(TAG, "Input stream was disconnected", e);
                 break;
             }
         }
-    }
 
-    // Call this from the main activity to send data to the remote device.
-    public void write(byte[] bytes) {
-        try {
-            mmOutStream.write(bytes);
-
-            // Share the sent message with the UI activity.
-            Message writtenMsg = handler.obtainMessage(
-                    1, -1, -1, mmBuffer);
-            writtenMsg.sendToTarget();
-        } catch (IOException e) {
-            Log.e(TAG, "Error occurred when sending data", e);
-
-            // Send a failure message back to the activity.
-            Message writeErrorMsg =
-                    handler.obtainMessage(2);
-            Bundle bundle = new Bundle();
-            bundle.putString("toast",
-                    "Couldn't send data to the other device");
-            writeErrorMsg.setData(bundle);
-            handler.sendMessage(writeErrorMsg);
-        }
     }
 
     // Call this method from the main activity to shut down the connection.

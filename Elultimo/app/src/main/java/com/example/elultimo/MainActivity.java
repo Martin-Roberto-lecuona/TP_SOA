@@ -31,7 +31,6 @@ public class MainActivity extends AppCompatActivity {
     BluetoothDevice arduinoBTModule = null;
     public static final int MULTIPLE_PERMISSIONS = 10;
     UUID arduinoUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
-    ConnectedThread connectedThread;
     ConnectThread connectThread;
 
 
@@ -121,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
                             //If we find the HC 05 device (the Arduino BT module)
                             //We assign the device value to the Global variable BluetoothDevice
                             //We enable the button "Connect to HC 05 device"
-                            if (deviceName.equals("EC744")) {
+                            if (deviceName.equals("HC-05")) {
                                 Log.d(TAG, "HC-05 found");
                                 arduinoUUID = device.getUuids()[0].getUuid();
                                 arduinoBTModule = device;
@@ -139,6 +138,7 @@ public class MainActivity extends AppCompatActivity {
         button_connect.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Perform action on click
+                connectThread = new ConnectThread(arduinoBTModule, arduinoUUID, handler);
                 connectThread.start();
                 Log.d(TAG, "CONECTO");
 

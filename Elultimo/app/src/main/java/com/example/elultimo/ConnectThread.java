@@ -20,10 +20,11 @@ public class ConnectThread extends Thread {
 
     @SuppressLint("MissingPermission")
     public ConnectThread(BluetoothDevice device, UUID MY_UUID, Handler handler) {
+        Log.d(TAG, "run: ARRANCA");
         // Use a temporary object that is later assigned to mmSocket
         // because mmSocket is final.
         BluetoothSocket tmp = null;
-        this.handler=handler;
+        ConnectThread.handler =handler;
 
         try {
             // Get a BluetoothSocket to connect with the given BluetoothDevice.
@@ -36,7 +37,7 @@ public class ConnectThread extends Thread {
     }
 
     @SuppressLint("MissingPermission")
-    public void start() {
+    public void run() {
 
         try {
             // Connect to the remote device through the socket. This call blocks
@@ -72,4 +73,3 @@ public class ConnectThread extends Thread {
         return mmSocket;
     }
 }
-

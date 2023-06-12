@@ -2,6 +2,7 @@ package com.example.elultimo;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
@@ -9,6 +10,7 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -17,7 +19,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.io.IOException;
 import java.util.Set;
 import java.util.UUID;
 
@@ -32,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     public static final int MULTIPLE_PERMISSIONS = 10;
     UUID arduinoUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     ConnectThread connectThread;
+    ConnectedThread connectedThread;
 
 
     @Override
@@ -63,11 +68,18 @@ public class MainActivity extends AppCompatActivity {
 
         button_controls.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                try {
+                    connectThread.write("asd");
+                } catch (IOException e) {
+                    Log.d(TAG, "onClick: " + e);
+                }
+
+                    /*
                 // Perform action on click
                 Intent activityChangeIntent = new Intent(MainActivity.this, ControlsActivity.class);
-
+                //activityChangeIntent.putExtra("bluetoothSocket", connectThread);
                 MainActivity.this.startActivity(activityChangeIntent);
-
+*/
             }
         });
 
@@ -83,26 +95,16 @@ public class MainActivity extends AppCompatActivity {
                     if (!bluetoothAdapter.isEnabled()) {
                         Log.d(TAG, "Bluetooth is disabled");
                         Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-                            // TODO: Consider calling
-                            //    ActivityCompat#requestPermissions
-                            // here to request the missing permissions, and then overriding
-                            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                            //                                          int[] grantResults)
-                            // to handle the case where the user grants the permission. See the documentation
-                            // for ActivityCompat#requestPermissions for more details.
-                            Log.d(TAG, "We don't have BT Permissions");
-                            //startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-                            //Log.d(TAG, "Bluetooth is enabled now");
-                        } else {
-                            Log.d(TAG, "We have BT Permissions");
-                            //startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-                            //Log.d(TAG, "Bluetooth is enabled now");
-                        }
-
+                        Toast.makeText(getApplicationContext(), "Bluetooth no activado", Toast.LENGTH_SHORT).show();
 
                     } else {
                         Log.d(TAG, "Bluetooth is enabled");
+                        if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_DENIED) {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                                ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.BLUETOOTH_CONNECT}, 2);
+                                return;
+                            }
+                        }
                     }
                     String btDevicesString = "";
                     Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
@@ -120,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
                             //If we find the HC 05 device (the Arduino BT module)
                             //We assign the device value to the Global variable BluetoothDevice
                             //We enable the button "Connect to HC 05 device"
-                            if (deviceName.equals("HC-05")) {
+                            if (deviceName.equals("DESKTOP-9555JLG")) {
                                 Log.d(TAG, "HC-05 found");
                                 arduinoUUID = device.getUuids()[0].getUuid();
                                 arduinoBTModule = device;
@@ -139,13 +141,15 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 // Perform action on click
                 connectThread = new ConnectThread(arduinoBTModule, arduinoUUID, handler);
-                connectThread.start();
+                connectThread.run();
+                if (connectThread.getMmSocket().isConnected()) {
+                    Log.d(TAG, "Calling ConnectedThread class");
+                }
                 Log.d(TAG, "CONECTO");
+                button_controls.setEnabled(true);
 
             }
         });
 
     }
-
-
 }

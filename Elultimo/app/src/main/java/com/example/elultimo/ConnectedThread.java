@@ -42,7 +42,7 @@ public class ConnectedThread extends Thread {
         mmOutStream = tmpOut;
     }
 
-    public String getValueRead(){
+    public String getValueRead() {
         return valueRead;
     }
 
@@ -64,7 +64,7 @@ public class ConnectedThread extends Thread {
                     readMessage = new String(buffer, 0, bytes);
                     Log.e(TAG, readMessage);
                     //Value to be read by the Observer streamed by the Obervable
-                    valueRead=readMessage;
+                    valueRead = readMessage;
                     bytes = 0;
                     numberOfReadings++;
                 } else {
@@ -87,4 +87,6 @@ public class ConnectedThread extends Thread {
             Log.e(TAG, "Could not close the connect socket", e);
         }
     }
+
+
 }

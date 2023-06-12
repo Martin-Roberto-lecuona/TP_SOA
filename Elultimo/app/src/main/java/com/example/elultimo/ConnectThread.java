@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.util.Log;
 
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.UUID;
 
 
@@ -20,7 +21,6 @@ public class ConnectThread extends Thread {
 
     @SuppressLint("MissingPermission")
     public ConnectThread(BluetoothDevice device, UUID MY_UUID, Handler handler) {
-        Log.d(TAG, "run: ARRANCA");
         // Use a temporary object that is later assigned to mmSocket
         // because mmSocket is final.
         BluetoothSocket tmp = null;
@@ -38,6 +38,7 @@ public class ConnectThread extends Thread {
 
     @SuppressLint("MissingPermission")
     public void run() {
+        Log.d(TAG, "run: ARRANCA");
 
         try {
             // Connect to the remote device through the socket. This call blocks
@@ -72,4 +73,16 @@ public class ConnectThread extends Thread {
     public BluetoothSocket getMmSocket(){
         return mmSocket;
     }
+
+    public void write(String input) throws IOException {
+        OutputStream mmOutStream = mmSocket.getOutputStream();
+        byte[] msgBuffer = input.getBytes();           //converts entered String into bytes
+        try {
+            mmOutStream.write(msgBuffer);                //write bytes over BT connection via outstream
+        } catch (IOException e) {
+            Log.d(TAG, "write: " + e);
+
+        }
+    }
+
 }

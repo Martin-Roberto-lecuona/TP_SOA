@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
         final Button button_connect = (Button) findViewById(R.id.connect);
         final Button button_controls = (Button) findViewById(R.id.controls);
         final TextView text_linked = (TextView) findViewById(R.id.linked_devices);
+        final Button button = (Button) findViewById(R.id.button);
 
         handler = new Handler(Looper.getMainLooper()) {
             @Override
@@ -69,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
         button_controls.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 try {
-                    connectThread.write("asd");
+                    connectThread.write("ANDA\n");
                 } catch (IOException e) {
                     Log.d(TAG, "onClick: " + e);
                 }
@@ -147,6 +148,14 @@ public class MainActivity extends AppCompatActivity {
                 }
                 Log.d(TAG, "CONECTO");
                 button_controls.setEnabled(true);
+
+            }
+        });
+
+        button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                String valor = connectThread.getValueRead();
+                Log.d(TAG, "LEE: "+ valor);
 
             }
         });

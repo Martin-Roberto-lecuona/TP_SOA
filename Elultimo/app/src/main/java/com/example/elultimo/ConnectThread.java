@@ -6,7 +6,9 @@ import android.bluetooth.BluetoothSocket;
 import android.os.Handler;
 import android.util.Log;
 
+import java.io.FilterInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.UUID;
 
@@ -18,6 +20,8 @@ public class ConnectThread extends Thread {
     private static final String TAG = "FrugalLogs";
     public static Handler handler;
     private final static int ERROR_READ = 0;
+    private String valueRead;
+
 
     @SuppressLint("MissingPermission")
     public ConnectThread(BluetoothDevice device, UUID MY_UUID, Handler handler) {
@@ -39,11 +43,15 @@ public class ConnectThread extends Thread {
     @SuppressLint("MissingPermission")
     public void run() {
         Log.d(TAG, "run: ARRANCA");
+        InputStream mmInStream;
+        int bytes;
+        byte[] buffer = new byte[256];
 
         try {
             // Connect to the remote device through the socket. This call blocks
             // until it succeeds or throws an exception.
             mmSocket.connect();
+            mmInStream = mmSocket.getInputStream();
         } catch (IOException connectException) {
             // Unable to connect; close the socket and return.
             handler.obtainMessage(ERROR_READ, "Unable to connect to the BT device").sendToTarget();
@@ -55,6 +63,26 @@ public class ConnectThread extends Thread {
             }
             return;
         }
+/*
+        while (true)
+        {
+            try
+            {
+                //se leen los datos del Bluethoot
+                bytes = mmInStream.read(buffer);
+                String readMessage;
+                readMessage = new String(buffer, 0, bytes);
+                valueRead = readMessage;
+                //se muestran en el layout de la activity, utilizando el handler del hilo
+                // principal antes mencionado
+            } catch (IOException e) {
+                break;
+            }
+
+        }
+ */
+
+
 
         // The connection attempt succeeded. Perform work associated with
         // the connection in a separate thread.
@@ -83,6 +111,10 @@ public class ConnectThread extends Thread {
             Log.d(TAG, "write: " + e);
 
         }
+    }
+
+    public String getValueRead() {
+        return valueRead;
     }
 
 }

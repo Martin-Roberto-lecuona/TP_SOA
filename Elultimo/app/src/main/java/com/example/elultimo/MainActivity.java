@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
         button_controls.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 try {
-                    connectThread.write("ANDA\n");
+                    connectThread.write("S\n");
                 } catch (IOException e) {
                     Log.d(TAG, "onClick: " + e);
                 }
@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
                             //If we find the HC 05 device (the Arduino BT module)
                             //We assign the device value to the Global variable BluetoothDevice
                             //We enable the button "Connect to HC 05 device"
-                            if (deviceName.equals("DESKTOP-9555JLG")) {
+                            if (deviceName.equals("HC-05")) {
                                 Log.d(TAG, "HC-05 found");
                                 arduinoUUID = device.getUuids()[0].getUuid();
                                 arduinoBTModule = device;

@@ -303,7 +303,6 @@ int get_event()
   digitalWrite(RIGHT_TRIGGER_PIN, LOW);
   right_distance = pulseIn(RIGHT_ECHO_PIN, HIGH) * CONST_TIME_TO_DISTANCE2;
 
-  brightness = map(analogRead(PHOTORESISTOR), 0, PHOTORESISTOR_MAX_VALUE, 254, 0);
   brightness = analogRead(PHOTORESISTOR);
   serial_input = Serial.read();
 

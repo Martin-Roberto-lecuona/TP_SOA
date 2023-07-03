@@ -37,7 +37,6 @@ public class ConnectedThread extends Thread {
             Log.e(TAG, "Error occurred when creating output stream", e);
         }
         //Input and Output streams members of the class
-        //We wont use the Output stream of this project
         mmInStream = tmpIn;
         mmOutStream = tmpOut;
     }
@@ -53,10 +52,8 @@ public class ConnectedThread extends Thread {
         int numberOfReadings = 0; //to control the number of readings from the Arduino
 
         // Keep listening to the InputStream until an exception occurs.
-        //We just want to get 1 temperature readings from the Arduino
         while (numberOfReadings < 1) {
             try {
-
                 buffer[bytes] = (byte) mmInStream.read();
                 String readMessage;
                 // If I detect a "\n" means I already read a full measurement

@@ -32,8 +32,9 @@ public class MainActivity extends AppCompatActivity {
     private final static int ERROR_READ = 0;
     private final String[] permissions = {Manifest.permission.BLUETOOTH, Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.BLUETOOTH_ADMIN, Manifest.permission.BLUETOOTH_ADVERTISE, Manifest.permission.BLUETOOTH_SCAN};
     private static final int REQUEST_ENABLE_BT = 1;
-    BluetoothDevice arduinoBTModule = null;
     public static final int MULTIPLE_PERMISSIONS = 10;
+    
+    BluetoothDevice arduinoBTModule = null;
     UUID arduinoUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     ConnectThread connectThread;
     ConnectedThread connectedThread;

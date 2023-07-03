@@ -191,7 +191,7 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
         }
     }
 
-    //Handler que sirve que permite mostrar datos en el Layout al hilo secundario
+    //Handler que permite mostrar datos en el Layout al hilo secundario
     private Handler Handler_Msg_Hilo_Principal ()
     {
         return new Handler() {

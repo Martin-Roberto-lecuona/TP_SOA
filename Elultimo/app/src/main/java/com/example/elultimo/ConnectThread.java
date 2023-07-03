@@ -23,6 +23,7 @@ public class ConnectThread extends Thread {
     private String valueRead;
 
 
+
     @SuppressLint("MissingPermission")
     public ConnectThread(BluetoothDevice device, UUID MY_UUID, Handler handler) {
         // Use a temporary object that is later assigned to mmSocket

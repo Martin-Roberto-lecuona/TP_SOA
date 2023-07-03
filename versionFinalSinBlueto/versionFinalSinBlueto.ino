@@ -1,15 +1,14 @@
 #include <Servo.h>
-#include <Adafruit_NeoPixel.h>
-
-SoftwareSerial mySerial(7, 8); // RX, TX
+#include <SoftwareSerial.h>
+SoftwareSerial mySerial(7, 8); // RX, TX 
 
 #define abs(x) ((x) > 0 ? (x) : -(x))
 #define SERVO_PIN 11
 #define SERVO_BUTTON_MODE_PIN 2
 #define LEFT_TRIGGER_PIN 13
 #define RIGHT_TRIGGER_PIN 12
-#define RIGHT_ECHO_PIN 9
-#define LEFT_ECHO_PIN 10
+#define RIGHT_ECHO_PIN 10
+#define LEFT_ECHO_PIN 9
 #define INICIAL_ANGLE 1500
 #define MAX_LEFT_ANGLE 2500
 #define MAX_RIGHT_ANGLE 600
@@ -18,9 +17,9 @@ SoftwareSerial mySerial(7, 8); // RX, TX
 #define CONST_TIME_TO_DISTANCE 58.2
 #define CONST_TIME_TO_DISTANCE2 0.017
 #define MAX_DISTANCE_TO_ANALYZE 100
-#define PIN_NEOPIXEL 5
+#define PIN_NEOPIXEL A3
 #define AMOUNT_LIGHTS 6
-#define PHOTORESISTOR_MAX_VALUE 679
+#define PHOTORESISTOR_MAX_VALUE 290
 #define PHOTORESISTOR A0
 #define LED_BUTTON_MODE_PIN 8
 
@@ -72,8 +71,6 @@ int right_distance;
 
 int state;
 
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(AMOUNT_LIGHTS, PIN_NEOPIXEL, NEO_GRB + NEO_KHZ800);
-uint32_t color = strip.ColorHSV(0, 0, 0);
 int brightness;
 int turn_led;
 int led_mode_manual;
@@ -103,15 +100,11 @@ void setup()
     pinMode(PIN_NEOPIXEL, OUTPUT);
 	pinMode(LED_BUTTON_MODE_PIN, INPUT);
 	
-    // Led Starts turned OFF
-    strip.begin();
-    strip.clear();
-    strip.fill(color, 0, AMOUNT_LIGHTS);
 
     // set embeded initial state
     state = STATE_INFLUENCER_AUTO_LIGHTS;
     band = 0;
-    //mySerial.begin(9600);
+    mySerial.begin(9600);  
 }
 
 void loop()
@@ -135,6 +128,7 @@ void FSM()
             Serial.println("STATE_INFLUENCER_AUTO_LIGHTS -> STATE_INFLUENCER_ON");
             state = STATE_INFLUENCER_ON;
 			turn_lights_on();
+      break;
         case CONTINUE:
             automatic_trace_mode_servo();
             automatic_led_room_brightness();
@@ -320,34 +314,36 @@ int get_event()
     int input;
     int serial_input;
     digitalWrite(LEFT_TRIGGER_PIN, LOW);
-    digitalWrite(RIGHT_TRIGGER_PIN, LOW);
-    delayMicroseconds(10);
+    delayMicroseconds(5);
 
     digitalWrite(LEFT_TRIGGER_PIN, HIGH); 
     delayMicroseconds(10);
     digitalWrite(LEFT_TRIGGER_PIN, LOW);
-    left_distance = pulseIn(LEFT_ECHO_PIN, HIGH) * CONST_TIME_TO_DISTANCE2;
+    left_distance = (pulseIn(LEFT_ECHO_PIN, HIGH) / 2) / 29.1;
 
     Serial.println(left_distance);
+
+    digitalWrite(RIGHT_TRIGGER_PIN, LOW);
+    delayMicroseconds(5);
 
     digitalWrite(RIGHT_TRIGGER_PIN, HIGH);
     delayMicroseconds(10);
     digitalWrite(RIGHT_TRIGGER_PIN, LOW);
-    right_distance = pulseIn(RIGHT_ECHO_PIN, HIGH) * CONST_TIME_TO_DISTANCE2;
+    right_distance = pulseIn(RIGHT_ECHO_PIN, HIGH) / CONST_TIME_TO_DISTANCE;
 
      Serial.println(right_distance);
 
-    brightness = map(analogRead(PHOTORESISTOR), 0, PHOTORESISTOR_MAX_VALUE, 254, 0);
+    brightness = analogRead(PHOTORESISTOR);
 
     serial_input = Serial.read();
-    /*
+    mySerial.println("estoy");
     if (mySerial.available())
     {
       serial_input = mySerial.read();
       
       Serial.write(serial_input);
       mySerial.println("Recibi");
-    } */   
+    }      
 
     cmp_angle_left = (angle_in_microsec <= MAX_LEFT_ANGLE);
     cmp_angle_right = (angle_in_microsec > MAX_RIGHT_ANGLE);
@@ -400,23 +396,19 @@ void automatic_mode_servo()
 
 void automatic_led_room_brightness()
 {
-    brightness = map(analogRead(PHOTORESISTOR), 0, PHOTORESISTOR_MAX_VALUE, 254, 0);
-    color = strip.ColorHSV(0, 0, brightness);
-    strip.fill(color, 0, AMOUNT_LIGHTS);
-    strip.show();
+    if (brightness > PHOTORESISTOR_MAX_VALUE)
+      digitalWrite(PIN_NEOPIXEL,HIGH);
+    else 
+     digitalWrite(PIN_NEOPIXEL,LOW);
+
 }
 void turn_lights_on()
 {
 	Serial.println("turn_lights_on");
-	color = strip.ColorHSV(0, 0, 254);
-	strip.fill(color, 0, AMOUNT_LIGHTS);
-	strip.show();
-
+  digitalWrite(PIN_NEOPIXEL,HIGH);
 }
 void turn_lights_off()
 {
 	Serial.println("turn_lights_off");
-	color = strip.ColorHSV(0, 0, 0);
-	strip.fill(color, 0, AMOUNT_LIGHTS);
-	strip.show();
+	 digitalWrite(PIN_NEOPIXEL,LOW);
 }

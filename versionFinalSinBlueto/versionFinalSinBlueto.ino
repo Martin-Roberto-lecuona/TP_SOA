@@ -368,7 +368,7 @@ void automatic_trace_mode_servo()
 {
     if (left_distance < MAX_DISTANCE_TO_ANALYZE && right_distance < MAX_DISTANCE_TO_ANALYZE)
     {
-        if ( left_distance  <= MAX_LEFT_ANGLE && left_distance - right_distance > DIFFERENCE_DONT_CARE)
+        if ( angle_in_microsec  <= MAX_LEFT_ANGLE && left_distance - right_distance > DIFFERENCE_DONT_CARE)
         {
             angle_in_microsec += ANGLE_CHANGE_REDUX;
             

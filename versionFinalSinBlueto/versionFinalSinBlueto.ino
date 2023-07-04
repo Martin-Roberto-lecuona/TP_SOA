@@ -5,14 +5,15 @@ SoftwareSerial mySerial(7, 8); // RX, TX
 #define abs(x) ((x) > 0 ? (x) : -(x))
 #define SERVO_PIN 11
 #define SERVO_BUTTON_MODE_PIN 2
-#define LEFT_TRIGGER_PIN 13
-#define RIGHT_TRIGGER_PIN 12
-#define RIGHT_ECHO_PIN 10
-#define LEFT_ECHO_PIN 9
+#define LEFT_TRIGGER_PIN 12
+#define RIGHT_TRIGGER_PIN 13
+#define RIGHT_ECHO_PIN 9
+#define LEFT_ECHO_PIN 10
 #define INICIAL_ANGLE 1500
 #define MAX_LEFT_ANGLE 2500
 #define MAX_RIGHT_ANGLE 600
-#define ANGLE_CHANGE 30
+#define ANGLE_CHANGE 20
+#define ANGLE_CHANGE_REDUX ANGLE_CHANGE*0.3
 #define DIFFERENCE_DONT_CARE 5
 #define CONST_TIME_TO_DISTANCE 58.2
 #define CONST_TIME_TO_DISTANCE2 0.017
@@ -312,16 +313,16 @@ void FSM()
 int get_event()
 {
     int input;
-    int serial_input;
+    int serial_input=0;
     digitalWrite(LEFT_TRIGGER_PIN, LOW);
     delayMicroseconds(5);
 
     digitalWrite(LEFT_TRIGGER_PIN, HIGH); 
     delayMicroseconds(10);
     digitalWrite(LEFT_TRIGGER_PIN, LOW);
-    left_distance = (pulseIn(LEFT_ECHO_PIN, HIGH) / 2) / 29.1;
+    left_distance = pulseIn(LEFT_ECHO_PIN, HIGH)  / CONST_TIME_TO_DISTANCE;;
 
-    Serial.println(left_distance);
+    //Serial.println(left_distance);
 
     digitalWrite(RIGHT_TRIGGER_PIN, LOW);
     delayMicroseconds(5);
@@ -331,17 +332,17 @@ int get_event()
     digitalWrite(RIGHT_TRIGGER_PIN, LOW);
     right_distance = pulseIn(RIGHT_ECHO_PIN, HIGH) / CONST_TIME_TO_DISTANCE;
 
-     Serial.println(right_distance);
+     //Serial.println(right_distance);
 
     brightness = analogRead(PHOTORESISTOR);
 
-    serial_input = Serial.read();
-    mySerial.println("estoy");
+    //serial_input = Serial.read();
+    //mySerial.println("estoy");
     if (mySerial.available())
     {
       serial_input = mySerial.read();
       
-      Serial.write(serial_input);
+      //Serial.write(serial_input);
       mySerial.println("Recibi");
     }      
 
@@ -369,12 +370,13 @@ void automatic_trace_mode_servo()
     {
         if ( left_distance  <= MAX_LEFT_ANGLE && left_distance - right_distance > DIFFERENCE_DONT_CARE)
         {
-            angle_in_microsec += ANGLE_CHANGE;
+            angle_in_microsec += ANGLE_CHANGE_REDUX;
+            
             servo.writeMicroseconds(angle_in_microsec);
         }
         else if (angle_in_microsec > MAX_RIGHT_ANGLE && right_distance - left_distance > DIFFERENCE_DONT_CARE)
         {
-            angle_in_microsec -= ANGLE_CHANGE;
+            angle_in_microsec -= ANGLE_CHANGE_REDUX;
             servo.writeMicroseconds(angle_in_microsec);
         }
     }

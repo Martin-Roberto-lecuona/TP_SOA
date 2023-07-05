@@ -1,7 +1,5 @@
 package com.example.elultimo;
 
-import static com.example.elultimo.MainActivity.handler;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -29,7 +27,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Set;
 import java.util.UUID;
 
@@ -38,6 +35,7 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
     private static final String TAG = "InfluLogs";
     private final static float ACC = 30;
     ConnectThread connectThread;
+    public static Handler handler;
     private BluetoothAdapter btAdapter = null;
     private BluetoothSocket btSocket = null;
     private StringBuilder recDataString = new StringBuilder();
@@ -72,9 +70,7 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
         BluetoothManager bluetoothManager = getSystemService(BluetoothManager.class);
         BluetoothAdapter bluetoothAdapter = bluetoothManager.getAdapter();
 
-        final Button button_influencer_mode = (Button) findViewById(R.id.influencer_mode);
-        final Button button_manual_mode = (Button) findViewById(R.id.manual_mode);
-        final Button button_security_cam = (Button) findViewById(R.id.security_cam);
+        final Button button_change_mode = (Button) findViewById(R.id.change_mode);
         final Button button_left = (Button) findViewById(R.id.button4);
         final Button button_right = (Button) findViewById(R.id.button5);
         final Switch switch_automatic_lights = (Switch) findViewById(R.id.automatic_lights);
@@ -82,9 +78,7 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
 
         state.setText("Estado: Influencer auto lights");
         mode = "Influencer";
-        button_manual_mode.setEnabled(true);
-        button_influencer_mode.setEnabled(false);
-        button_security_cam.setEnabled(false);
+        button_change_mode.setEnabled(true);
         button_left.setEnabled(false);
         button_right.setEnabled(false);
 
@@ -141,51 +135,14 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
             }
             Log.d(TAG, "CONECTO");
         }
-        button_influencer_mode.setOnClickListener(new View.OnClickListener(){
+        button_change_mode.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v) {
                 try {
                     connectThread.write("S");
-                    button_manual_mode.setEnabled(true);
-                    button_influencer_mode.setEnabled(false);
                     Log.d(TAG, "Modo manual");
                     mode = "Manual";
                     state.setText("Estado:"+ mode +" "+ lights);
 
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
-        button_manual_mode.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v) {
-                try {
-                    connectThread.write("S");
-                    button_security_cam.setEnabled(true);
-                    button_left.setEnabled(true);
-                    button_right.setEnabled(true);
-                    button_manual_mode.setEnabled(false);
-                    mode = "Manual";
-                    state.setText("Estado:"+ mode +" "+ lights);
-                    Log.d(TAG, "Modo security");
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    Log.d(TAG, "onClick: " + e.getMessage());
-                }
-            }
-        });
-
-        button_security_cam.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v) {
-                try {
-                    connectThread.write("S");
-                    button_influencer_mode.setEnabled(true);
-                    button_security_cam.setEnabled(false);
-                    button_left.setEnabled(false);
-                    button_right.setEnabled(false);
-                    Log.d(TAG, "Modo influ");
-                    mode = "Influencer";
-                    state.setText("Estado:"+ mode +" "+ lights);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

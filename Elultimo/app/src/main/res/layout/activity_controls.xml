@@ -17,6 +17,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <Button
+        android:id="@+id/change_light_mode"
+        android:layout_width="167dp"
+        android:layout_height="55dp"
+        android:text="Change light mode"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/change_mode"
+        app:layout_constraintVertical_bias="0.126" />
+
     <TextView
         android:id="@+id/estado"
         android:layout_width="wrap_content"
@@ -24,35 +35,6 @@
         android:layout_marginTop="36dp"
         android:text="Estado: a"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="36dp"
-        app:layout_constraintEnd_toStartOf="@+id/imageView3"
-        app:srcCompat="?android:attr/alertDialogIcon"
-        tools:layout_editor_absoluteY="468dp" />
-
-    <ImageView
-        android:id="@+id/imageView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="40dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:srcCompat="?android:attr/actionModeFindDrawable"
-        tools:layout_editor_absoluteY="464dp" />
-
-    <Switch
-        android:id="@+id/automatic_lights"
-        android:layout_width="184dp"
-        android:layout_height="66dp"
-        android:layout_marginTop="444dp"
-        android:text="Automatic Lights"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.18"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

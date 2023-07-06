@@ -73,7 +73,7 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
         final Button button_change_mode = (Button) findViewById(R.id.change_mode);
         final Button button_left = (Button) findViewById(R.id.button4);
         final Button button_right = (Button) findViewById(R.id.button5);
-        final Switch switch_automatic_lights = (Switch) findViewById(R.id.automatic_lights);
+        final Button change_light_mode = (Button) findViewById(R.id.change_light_mode);
         final TextView state = (TextView) findViewById(R.id.estado);
 
         state.setText("Estado: Influencer auto lights");
@@ -171,29 +171,16 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
             }
         });
 
-        switch_automatic_lights.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                // Perform actions based on the switch state
-                if (isChecked) {
-                    try {
-                        connectThread.write("Z");
-                        lights = "auto lights";
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    try {
-                        connectThread.write("Z");
-                        lights = "manual lights";
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+        change_light_mode.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v) {
+                try {
+                    connectThread.write("Z");
+                    Log.d(TAG, "Cambia luz");
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         });
-
-
     }
 
     @Override

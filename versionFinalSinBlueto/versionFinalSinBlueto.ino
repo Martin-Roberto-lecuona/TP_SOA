@@ -341,7 +341,6 @@ int get_event()
       serial_input = mySerial.read();
       
       //Serial.write(serial_input);
-      mySerial.println("Recibi");
     }      
 
     cmp_angle_left = (angle_in_microsec <= MAX_LEFT_ANGLE);

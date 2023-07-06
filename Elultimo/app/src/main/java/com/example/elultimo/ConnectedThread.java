@@ -84,6 +84,4 @@ public class ConnectedThread extends Thread {
             Log.e(TAG, "Could not close the connect socket", e);
         }
     }
-
-
 }

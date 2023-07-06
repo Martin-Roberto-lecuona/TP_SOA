@@ -3,8 +3,11 @@ package com.example.elultimo;
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
+
+import androidx.annotation.RequiresApi;
 
 import java.io.FilterInputStream;
 import java.io.IOException;
@@ -25,7 +28,7 @@ public class ConnectThread extends Thread {
 
 
     @SuppressLint("MissingPermission")
-    public ConnectThread(BluetoothDevice device, UUID MY_UUID, Handler handler) {
+    public ConnectThread(BluetoothDevice device, UUID MY_UUID, Handler handler)  {
         // Use a temporary object that is later assigned to mmSocket
         // because mmSocket is final.
         BluetoothSocket tmp = null;
@@ -44,7 +47,7 @@ public class ConnectThread extends Thread {
     @SuppressLint("MissingPermission")
     public void run() {
         Log.d(TAG, "run: ARRANCA");
-        InputStream mmInStream;
+        //InputStream mmInStream;
         int bytes;
         byte[] buffer = new byte[256];
 
@@ -52,7 +55,7 @@ public class ConnectThread extends Thread {
             // Connect to the remote device through the socket. This call blocks
             // until it succeeds or throws an exception.
             mmSocket.connect();
-            mmInStream = mmSocket.getInputStream();
+            //mmInStream = mmSocket.getInputStream();
         } catch (IOException connectException) {
             // Unable to connect; close the socket and return.
             handler.obtainMessage(ERROR_READ, "Unable to connect to the BT device").sendToTarget();
@@ -114,19 +117,32 @@ public class ConnectThread extends Thread {
         }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     public String getValueRead() throws IOException {
         InputStream inputStream = mmSocket.getInputStream();
 
-        byte[] buffer = new byte[20];
-        int bytes;
-        String data = "";
+        //byte[] buffer = new byte[20];
+        int bytes = 0;
+        String readMessage = "";
+        byte[] buffer = new byte[1024];
+        int numberOfReadings = 0; //to control the number of readings from the Arduino
 
-        while (data=="") {
-            bytes = inputStream.read(buffer);
-            data = new String(buffer, 0, bytes);
-            // Realiza las operaciones necesarias con los datos recibidos
+        while (numberOfReadings < 1) {
+            buffer[bytes] = (byte) inputStream.read();
+            // If I detect a "\n" means I already read a full measurement
+            readMessage = new String(buffer, 0, bytes);
+            Log.d(TAG, "buffer[bytes] = " + readMessage );
+            if (buffer[bytes] == '\n') {
+                readMessage = new String(buffer, 0, bytes);
+                Log.d(TAG, "arduino dijo:" + readMessage);
+                //Value to be read by the Observer streamed by the Obervable
+                bytes = 0;
+                numberOfReadings++;
+            } else {
+                bytes++;
+            }
         }
-        return data;
+        return readMessage;
     }
 
 }

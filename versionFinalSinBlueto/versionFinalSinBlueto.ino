@@ -26,17 +26,17 @@ SoftwareSerial mySerial(7, 8); // RX, TX
 
 //----------------------------------------------
 // States
-#define STATE_INFLUENCER_AUTO_LIGHTS 100
-#define STATE_INFLUENCER_ON 200
-#define STATE_INFLUENCER_OFF 210
+#define STATE_INFLUENCER_AUTO_LIGHTS 'A'
+#define STATE_INFLUENCER_ON 'B'
+#define STATE_INFLUENCER_OFF 'C'
 
-#define STATE_MANUAL_AUTO_LIGHTS 300
-#define STATE_MANUAL_ON 400
-#define STATE_MANUAL_OFF 410
+#define STATE_MANUAL_AUTO_LIGHTS 'D'
+#define STATE_MANUAL_ON 'E'
+#define STATE_MANUAL_OFF 'F'
 
-#define STATE_CAM_AUTO_LIGHTS 500
-#define STATE_CAM_ON 600
-#define STATE_CAM_OFF 610
+#define STATE_CAM_AUTO_LIGHTS 'G'
+#define STATE_CAM_ON 'H'
+#define STATE_CAM_OFF 'I'
 //----------------------------------------------
 
 // Events
@@ -48,15 +48,12 @@ SoftwareSerial mySerial(7, 8); // RX, TX
 //----------------------------------------------
 
 // Commands
-/*
-    L: Move Left
-    R: Move Right
-    S: Cycle Servo Mode 
-    Z: Cycle Light Mode
-
-    Commands have to be one char, because of Serial.read()
-*/
+#define MOVE_LEFT 'L'
+#define MOVE_RIGHT 'R'
+#define CHANGE_SERVO 'S'
+#define CHANGE_LIGHT 'Z'
 //----------------------------------------------
+
 Servo servo;
 
 struct stSwitch
@@ -306,8 +303,9 @@ void FSM()
 
         break;
 
-    
     }
+    mySerial.println(state);
+    
 }
 
 int get_event()
@@ -349,16 +347,16 @@ int get_event()
     cmp_angle_left = (angle_in_microsec <= MAX_LEFT_ANGLE);
     cmp_angle_right = (angle_in_microsec > MAX_RIGHT_ANGLE);
 
-    if (serial_input == 'S')
+    if (serial_input == CHANGE_SERVO)
 		return CHANGE_SERVO_MODE;
 
-    if (serial_input == 'Z')
+    if (serial_input == CHANGE_LIGHT)
         return CHANGE_LIGHTS_MODE;
 	
-	if (serial_input == 'L')
+	if (serial_input == MOVE_LEFT)
 		return MOVE_SERVO_LEFT;
 	
-	if (serial_input == 'R')
+	if (serial_input == MOVE_RIGHT)
 		return MOVE_SERVO_RIGHT;
     return CONTINUE;
 }

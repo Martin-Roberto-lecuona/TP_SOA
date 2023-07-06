@@ -114,8 +114,19 @@ public class ConnectThread extends Thread {
         }
     }
 
-    public String getValueRead() {
-        return valueRead;
+    public String getValueRead() throws IOException {
+        InputStream inputStream = mmSocket.getInputStream();
+
+        byte[] buffer = new byte[20];
+        int bytes;
+        String data = "";
+
+        while (data=="") {
+            bytes = inputStream.read(buffer);
+            data = new String(buffer, 0, bytes);
+            // Realiza las operaciones necesarias con los datos recibidos
+        }
+        return data;
     }
 
 }

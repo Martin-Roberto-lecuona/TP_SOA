@@ -50,9 +50,7 @@ public class MainActivity extends AppCompatActivity {
 
         final Button button_search = (Button) findViewById(R.id.search);
         final Button button_connect = (Button) findViewById(R.id.connect);
-        final Button button_controls = (Button) findViewById(R.id.controls);
         final TextView text_linked = (TextView) findViewById(R.id.linked_devices);
-        final Button button = (Button) findViewById(R.id.button);
 
         handler = new Handler(Looper.getMainLooper()) {
             @Override
@@ -66,23 +64,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         };
-
-
-        button_controls.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                /*
-                try {
-                    connectThread.write("S\n");
-                } catch (IOException e) {
-                    Log.d(TAG, "onClick: " + e);
-                }
-*/
-                // Perform action on click
-                Intent activityChangeIntent = new Intent(MainActivity.this, ControlsActivity.class);
-                activityChangeIntent.putExtra("addrBluetooth", arduinoBTModule.getAddress());
-                MainActivity.this.startActivity(activityChangeIntent);
-            }
-        });
 
         button_search.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -116,8 +97,8 @@ public class MainActivity extends AppCompatActivity {
                         for (BluetoothDevice device : pairedDevices) {
                             String deviceName = device.getName();
                             String deviceHardwareAddress = device.getAddress(); // MAC address
-                            Log.d(TAG, "deviceName:" + deviceName);
-                            Log.d(TAG, "deviceHardwareAddress:" + deviceHardwareAddress);
+                            //Log.d(TAG, "deviceName:" + deviceName);
+                            //Log.d(TAG, "deviceHardwareAddress:" + deviceHardwareAddress);
                             //We append all devices to a String that we will display in the UI
                             btDevicesString = btDevicesString + deviceName + " || " + deviceHardwareAddress + "\n";
                             //If we find the HC 05 device (the Arduino BT module)
@@ -141,6 +122,7 @@ public class MainActivity extends AppCompatActivity {
         button_connect.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Perform action on click
+                /*
                 connectThread = new ConnectThread(arduinoBTModule, arduinoUUID, handler);
                 connectThread.run();
                 if (connectThread.getMmSocket().isConnected()) {
@@ -148,15 +130,10 @@ public class MainActivity extends AppCompatActivity {
                 }
                 Log.d(TAG, "CONECTO");
                 button_controls.setEnabled(true);
-
-            }
-        });
-
-        button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                String valor = connectThread.getValueRead();
-                Log.d(TAG, "LEE: "+ valor);
-
+*/
+                // GO to another activity
+                Intent activityChangeIntent = new Intent(MainActivity.this, ControlsActivity.class);
+                MainActivity.this.startActivity(activityChangeIntent);
             }
         });
 

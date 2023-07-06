@@ -111,8 +111,8 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
                 for (BluetoothDevice device : pairedDevices) {
                     String deviceName = device.getName();
                     String deviceHardwareAddress = device.getAddress(); // MAC address
-                    Log.d(TAG, "deviceName:" + deviceName);
-                    Log.d(TAG, "deviceHardwareAddress:" + deviceHardwareAddress);
+                    //Log.d(TAG, "deviceName:" + deviceName);
+                    //Log.d(TAG, "deviceHardwareAddress:" + deviceHardwareAddress);
                     //We append all devices to a String that we will display in the UI
                     btDevicesString = btDevicesString + deviceName + " || " + deviceHardwareAddress + "\n";
                     //If we find the HC 05 device (the Arduino BT module)
@@ -139,8 +139,8 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
             public void onClick(View v) {
                 try {
                     connectThread.write("S");
-                    Log.d(TAG, "Modo manual");
-                    mode = "Manual";
+                    mode =  connectThread.getValueRead();
+                    Log.d(TAG, mode);
                     state.setText("Estado:"+ mode +" "+ lights);
 
                 } catch (IOException e) {

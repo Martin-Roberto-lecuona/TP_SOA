@@ -139,7 +139,7 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
             public void onClick(View v) {
                 try {
                     connectThread.write("S");
-                    mode =  connectThread.getValueRead();
+                    mode =  connectThread.getState(mode);
                     Log.d(TAG, mode);
                     state.setText("Estado:"+ mode +" "+ lights);
 

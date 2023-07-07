@@ -6,7 +6,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ControlsActivity">
-
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:src="@drawable/fondoappconfig"
+        android:alpha="0.5"
+        android:contentDescription="fondo" />
     <Button
         android:id="@+id/change_mode"
         android:layout_width="wrap_content"

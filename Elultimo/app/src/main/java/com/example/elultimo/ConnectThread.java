@@ -145,4 +145,16 @@ public class ConnectThread extends Thread {
         return readMessage;
     }
 
+    public String getState(String State)  {
+        if(State == "Influencer")
+        {
+            return "Manual";
+        }
+        if(State == "Manual")
+        {
+            return "Camara";
+        }
+        return "Influencer";
+    }
+
 }

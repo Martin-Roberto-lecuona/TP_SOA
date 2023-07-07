@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Elultimo</string>
     <string name="nombre_hc05">BANIOLIMPIO</string>
+    <string name="direccionMAC">20:17:02:27:16:68</string>
     <string name="STATE_INFLUENCER_AUTO_LIGHTS">A</string>
     <string name="STATE_INFLUENCER_ON">B</string>
     <string name="STATE_INFLUENCER_OFF">C</string>

@@ -26,17 +26,17 @@ SoftwareSerial mySerial(7, 8); // RX, TX
 
 //----------------------------------------------
 // States
-#define STATE_INFLUENCER_AUTO_LIGHTS 'A'
-#define STATE_INFLUENCER_ON 'B'
-#define STATE_INFLUENCER_OFF 'C'
+#define STATE_INFLUENCER_AUTO_LIGHTS 1
+#define STATE_INFLUENCER_ON 2
+#define STATE_INFLUENCER_OFF 3
 
-#define STATE_MANUAL_AUTO_LIGHTS 'D'
-#define STATE_MANUAL_ON 'E'
-#define STATE_MANUAL_OFF 'F'
+#define STATE_MANUAL_AUTO_LIGHTS 4
+#define STATE_MANUAL_ON 5
+#define STATE_MANUAL_OFF 6
 
-#define STATE_CAM_AUTO_LIGHTS 'G'
-#define STATE_CAM_ON 'H'
-#define STATE_CAM_OFF 'I'
+#define STATE_CAM_AUTO_LIGHTS 7
+#define STATE_CAM_ON 8
+#define STATE_CAM_OFF 9
 //----------------------------------------------
 
 // Events
@@ -304,8 +304,7 @@ void FSM()
         break;
 
     }
-    mySerial.println(state);
-    
+    mySerial.write(state);    
 }
 
 int get_event()

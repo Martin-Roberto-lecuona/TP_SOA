@@ -18,13 +18,14 @@ import java.util.UUID;
 
 //Class that will open the BT Socket to the Arduino BT Module
 //Given a BT device, the UUID and a Handler to set the results
-public class ConnectThread extends Thread {
+public class ConnectThread extends Thread
+{
     private final BluetoothSocket mmSocket;
     private static final String TAG = "FrugalLogs";
     public static Handler handler;
     private final static int ERROR_READ = 0;
-    private String valueRead;
 
+    private String valueRead;
     private final static int TOTAL_BYTES_SIZE = 1024;
     private final static int MANUAL_AUTO = -122;
     private final static int MANUAL_ON = -113;

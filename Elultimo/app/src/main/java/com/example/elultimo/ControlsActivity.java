@@ -31,7 +31,8 @@ import java.io.IOException;
 import java.util.Set;
 import java.util.UUID;
 
-public class ControlsActivity extends AppCompatActivity implements SensorEventListener{
+public class ControlsActivity extends AppCompatActivity implements SensorEventListener
+{
 
     private static final String TAG = "InfluLogs";
     private final static float ACC = 30;

@@ -11,8 +11,8 @@ import java.io.OutputStream;
 
 //Class that given an open BT Socket will
 //Open, manage and close the data Stream from the Arduino BT device
-public class ConnectedThread extends Thread {
-
+public class ConnectedThread extends Thread
+{
     private static final String TAG = "FrugalLogs";
     private final BluetoothSocket mmSocket;
     private final InputStream mmInStream;

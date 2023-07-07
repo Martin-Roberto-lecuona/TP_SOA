@@ -6,12 +6,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ControlsActivity">
+
     <ImageView
+        android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/fondoappconfig"
         android:alpha="0.5"
-        android:contentDescription="fondo" />
+        android:contentDescription="fondo"
+        android:src="@drawable/fondoappconfig" />
     <Button
         android:id="@+id/change_mode"
         android:layout_width="wrap_content"
@@ -64,5 +66,29 @@
         android:textSize="50sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+
+
+    <Button
+        android:id="@+id/Automatic"
+        android:layout_width="250px"
+        android:layout_height="150px"
+        android:layout_marginStart="88dp"
+        android:layout_marginTop="84dp"
+        android:text="AUTO"
+        app:layout_constraintStart_toStartOf="@+id/imageView"
+        app:layout_constraintTop_toBottomOf="@+id/change_light_mode" />
+
+    <Button
+        android:id="@+id/OnOff"
+        android:layout_width="250px"
+        android:layout_height="150px"
+        android:layout_marginStart="52dp"
+        android:layout_marginTop="84dp"
+        android:text="ON/OFF"
+        app:layout_constraintEnd_toEndOf="@+id/imageView"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/Automatic"
+        app:layout_constraintTop_toBottomOf="@+id/change_light_mode" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

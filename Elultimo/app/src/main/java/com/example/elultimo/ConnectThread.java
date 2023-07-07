@@ -118,7 +118,65 @@ public class ConnectThread extends Thread {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
-    public String getValueRead() throws IOException {
+    public byte getValueRead() throws IOException {
+        InputStream inputStream = mmSocket.getInputStream();
+        inputStream.skip(inputStream.available());
+        byte b = (byte) inputStream.read();
+        return b ;
+    }
+
+    public String getServoState(byte b)  {
+        // MANUAL_AUTO = -122
+        // MANUAL_ON = -113
+        // MANUAL_OFF = -121
+
+        // CAMARA_AUTO = -8
+        // CAMARA_ON = -116
+        // CAMARA_OFF = -29
+
+        // INFLUENCER_AUTO = -32
+        // INFLUENCER_ON = -125
+        // INFLUENCER_OFF = -16
+
+        Log.d(TAG,b+"");
+        if(b == -122 || b == -113 | b == -121){
+            return "Manual";
+        }
+        if(b == -8 || b == -116 || b == -29){
+            return "Camara";
+        }
+        if(b == -32 || b == -125 || b == -16){
+            return "Influencer";
+        }
+        return b+"";
+    }
+    public String getLightstate(byte b)  {
+        // MANUAL_AUTO = -122
+        // MANUAL_ON = -113
+        // MANUAL_OFF = -121
+
+        // CAMARA_AUTO = -8
+        // CAMARA_ON = -116
+        // CAMARA_OFF = -29
+
+        // INFLUENCER_AUTO = -32
+        // INFLUENCER_ON = -125
+        // INFLUENCER_OFF = -16
+
+        Log.d(TAG,b+"");
+        if(b == -122 || b == -8 | b == -32){
+            return "AUTO";
+        }
+        if(b == -113 || b == -116 || b == -125){
+            return "ON";
+        }
+        if(b == -121 || b == -29 || b == -16){
+            return "OFF";
+        }
+        return b+"";
+    }
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
+    public String getValueReadOLD() throws IOException {
         InputStream inputStream = mmSocket.getInputStream();
 
         //byte[] buffer = new byte[20];
@@ -144,17 +202,4 @@ public class ConnectThread extends Thread {
         }
         return readMessage;
     }
-
-    public String getState(String State)  {
-        if(State == "Influencer")
-        {
-            return "Manual";
-        }
-        if(State == "Manual")
-        {
-            return "Camara";
-        }
-        return "Influencer";
-    }
-
 }

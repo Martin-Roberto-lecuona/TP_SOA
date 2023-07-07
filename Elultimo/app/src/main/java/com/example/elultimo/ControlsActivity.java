@@ -22,6 +22,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.ImageButton;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -75,12 +76,11 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
         final Button button_right = (Button) findViewById(R.id.button5);
         final Button change_light_mode = (Button) findViewById(R.id.change_light_mode);
         final TextView state = (TextView) findViewById(R.id.estado);
+        final Button onOff = (Button) findViewById(R.id.OnOff);
+        final Button automatic = (Button) findViewById(R.id.Automatic);
 
-        state.setText("Estado: Influencer auto lights");
-        mode = "Influencer";
-        button_change_mode.setEnabled(true);
-        button_left.setEnabled(false);
-        button_right.setEnabled(false);
+        state.setText("Espere..");
+
 
         if (bluetoothAdapter == null) {
             // Device doesn't support Bluetooth
@@ -134,14 +134,63 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
                 Log.d(TAG, "Calling ConnectedThread class");
             }
             Log.d(TAG, "CONECTO");
+            try {
+                button_change_mode.setEnabled(true);
+                change_light_mode.setEnabled(true);
+                onOff.setEnabled(true);
+                byte aux =  connectThread.getValueRead();
+                mode = connectThread.getServoState(aux);
+                state.setText("Estado:"+ mode);
+                if(mode == "Manual"){
+                    button_left.setEnabled(true);
+                    button_right.setEnabled(true);
+                }
+                    else
+                {
+                    button_left.setEnabled(false);
+                    button_right.setEnabled(false);
+                }
+                mode =  connectThread.getLightstate(aux);
+                Log.d(TAG, mode);
+
+                if(mode == "AUTO")
+                {
+                    onOff.setEnabled(false);
+                    automatic.setEnabled(true);
+                }
+                else if(mode == "ON")
+                {
+                    onOff.setEnabled(true);
+                    automatic.setEnabled(false);
+                }
+                else if(mode == "OFF")
+                {
+                    onOff.setEnabled(false);
+                    automatic.setEnabled(false);
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
+
         button_change_mode.setOnClickListener(new View.OnClickListener(){
             public void onClick(View v) {
                 try {
                     connectThread.write("S");
-                    mode =  connectThread.getState(mode);
+                    byte aux =  connectThread.getValueRead();
+                    mode =  connectThread.getServoState(aux);
                     Log.d(TAG, mode);
-                    state.setText("Estado:"+ mode +" "+ lights);
+                    state.setText("Estado:"+ mode);
+                    if(mode == "Manual"){
+                        button_left.setEnabled(true);
+                        button_right.setEnabled(true);
+                    }
+                    else
+                    {
+                        button_left.setEnabled(false);
+                        button_right.setEnabled(false);
+                    }
 
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -175,7 +224,26 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
             public void onClick(View v) {
                 try {
                     connectThread.write("Z");
-                    Log.d(TAG, "Cambia luz");
+                    byte aux =  connectThread.getValueRead();
+                    mode =  connectThread.getLightstate(aux);
+                    Log.d(TAG, mode);
+
+                    if(mode == "AUTO")
+                    {
+                        onOff.setEnabled(false);
+                        automatic.setEnabled(true);
+                    }
+                    else if(mode == "ON")
+                    {
+                        onOff.setEnabled(true);
+                        automatic.setEnabled(false);
+                    }
+                    else if(mode == "OFF")
+                    {
+                        onOff.setEnabled(false);
+                        automatic.setEnabled(false);
+                    }
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

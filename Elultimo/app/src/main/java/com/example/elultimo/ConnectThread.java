@@ -25,178 +25,176 @@ public class ConnectThread extends Thread {
     private final static int ERROR_READ = 0;
     private String valueRead;
 
+    private final static int TOTAL_BYTES_SIZE = 1024;
+    private final static int MANUAL_AUTO = -122;
+    private final static int MANUAL_ON = -113;
+    private final static int MANUAL_OFF = -121;
+    private final static int CAMARA_AUTO = -8;
+    private final static int CAMARA_ON = -116;
+    private final static int CAMARA_OFF = -29;
+    private final static int INFLUENCER_AUTO = -8;
+    private final static int INFLUENCER_ON = -116;
+    private final static int INFLUENCER_OFF = -29;
 
+    private final static String SERVO_INFLUENCER_MODE = "Influencer";
 
+    private final static String SERVO_MANUAL_MODE = "Manual";
+
+    private final static String SERVO_CAM_MODE = "Camara";
+
+    private final static String AUTO_LIGHTS = "AUTO";
+
+    private final static String LIGHTS_ON = "ON";
+
+    private final static String LIGHTS_OFF = "OFF";
     @SuppressLint("MissingPermission")
-    public ConnectThread(BluetoothDevice device, UUID MY_UUID, Handler handler)  {
+    public ConnectThread(BluetoothDevice device, UUID MY_UUID, Handler handler)
+    {
         // Use a temporary object that is later assigned to mmSocket
         // because mmSocket is final.
         BluetoothSocket tmp = null;
         ConnectThread.handler =handler;
-
-        try {
+        try
+        {
             // Get a BluetoothSocket to connect with the given BluetoothDevice.
             // MY_UUID is the app's UUID string, also used in the server code.
             tmp = device.createRfcommSocketToServiceRecord(MY_UUID);
-        } catch (IOException e) {
+        }
+        catch (IOException e)
+        {
             Log.e(TAG, "Socket's create() method failed", e);
         }
         mmSocket = tmp;
     }
 
     @SuppressLint("MissingPermission")
-    public void run() {
-        Log.d(TAG, "run: ARRANCA");
+    public void run()
+    {
         //InputStream mmInStream;
         int bytes;
         byte[] buffer = new byte[256];
 
-        try {
+        try
+        {
             // Connect to the remote device through the socket. This call blocks
             // until it succeeds or throws an exception.
             mmSocket.connect();
             //mmInStream = mmSocket.getInputStream();
-        } catch (IOException connectException) {
+        }
+        catch (IOException connectException)
+        {
             // Unable to connect; close the socket and return.
             handler.obtainMessage(ERROR_READ, "Unable to connect to the BT device").sendToTarget();
             Log.e(TAG, "connectException: " + connectException);
-            try {
+            try
+            {
                 mmSocket.close();
-            } catch (IOException closeException) {
+            }
+            catch (IOException closeException)
+            {
                 Log.e(TAG, "Could not close the client socket", closeException);
             }
             return;
         }
-/*
-        while (true)
-        {
-            try
-            {
-                //se leen los datos del Bluethoot
-                bytes = mmInStream.read(buffer);
-                String readMessage;
-                readMessage = new String(buffer, 0, bytes);
-                valueRead = readMessage;
-                //se muestran en el layout de la activity, utilizando el handler del hilo
-                // principal antes mencionado
-            } catch (IOException e) {
-                break;
-            }
-
-        }
- */
-
-
-
-        // The connection attempt succeeded. Perform work associated with
-        // the connection in a separate thread.
-        //manageMyConnectedSocket(mmSocket);
     }
 
     // Closes the client socket and causes the thread to finish.
-    public void cancel() {
-        try {
+    public void cancel()
+    {
+        try
+        {
             mmSocket.close();
-        } catch (IOException e) {
+        }
+        catch (IOException e)
+        {
             Log.e(TAG, "Could not close the client socket", e);
         }
     }
 
-    public BluetoothSocket getMmSocket(){
+    public BluetoothSocket getMmSocket()
+    {
         return mmSocket;
     }
 
-    public void write(String input) throws IOException {
+    public void write(String input) throws IOException
+    {
         OutputStream mmOutStream = mmSocket.getOutputStream();
         byte[] msgBuffer = input.getBytes();           //converts entered String into bytes
-        try {
+        try
+        {
             mmOutStream.write(msgBuffer);                //write bytes over BT connection via outstream
-        } catch (IOException e) {
+        }
+        catch (IOException e)
+        {
             Log.d(TAG, "write: " + e);
-
         }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
-    public byte getValueRead() throws IOException {
+    public byte getValueRead() throws IOException
+    {
         InputStream inputStream = mmSocket.getInputStream();
         inputStream.skip(inputStream.available());
         byte b = (byte) inputStream.read();
-        return b ;
+        return b;
     }
 
-    public String getServoState(byte b)  {
-        // MANUAL_AUTO = -122
-        // MANUAL_ON = -113
-        // MANUAL_OFF = -121
-
-        // CAMARA_AUTO = -8
-        // CAMARA_ON = -116
-        // CAMARA_OFF = -29
-
-        // INFLUENCER_AUTO = -32
-        // INFLUENCER_ON = -125
-        // INFLUENCER_OFF = -16
-
-        Log.d(TAG,b+"");
-        if(b == -122 || b == -113 | b == -121){
-            return "Manual";
+    public String getServoState(byte byteServoState)
+    {
+        Log.d(TAG,byteServoState+"");
+        if(byteServoState == MANUAL_AUTO || byteServoState == MANUAL_ON | byteServoState == MANUAL_OFF)
+        {
+            return SERVO_MANUAL_MODE;
         }
-        if(b == -8 || b == -116 || b == -29){
-            return "Camara";
+        if(byteServoState == CAMARA_AUTO || byteServoState == CAMARA_ON || byteServoState == CAMARA_OFF)
+        {
+            return SERVO_CAM_MODE;
         }
-        if(b == -32 || b == -125 || b == -16){
-            return "Influencer";
+        if(byteServoState == INFLUENCER_AUTO || byteServoState ==  INFLUENCER_ON || byteServoState == INFLUENCER_OFF)
+        {
+            return SERVO_INFLUENCER_MODE;
         }
-        return b+"";
+        return byteServoState+"";
     }
-    public String getLightstate(byte b)  {
-        // MANUAL_AUTO = -122
-        // MANUAL_ON = -113
-        // MANUAL_OFF = -121
-
-        // CAMARA_AUTO = -8
-        // CAMARA_ON = -116
-        // CAMARA_OFF = -29
-
-        // INFLUENCER_AUTO = -32
-        // INFLUENCER_ON = -125
-        // INFLUENCER_OFF = -16
-
-        Log.d(TAG,b+"");
-        if(b == -122 || b == -8 | b == -32){
-            return "AUTO";
+    public String getLightstate(byte byteLightsState)
+    {
+        Log.d(TAG,byteLightsState+"");
+        if(byteLightsState == MANUAL_AUTO || byteLightsState == CAMARA_AUTO || byteLightsState == INFLUENCER_AUTO)
+        {
+            return AUTO_LIGHTS;
         }
-        if(b == -113 || b == -116 || b == -125){
-            return "ON";
+        if(byteLightsState == MANUAL_ON || byteLightsState == CAMARA_ON || byteLightsState == INFLUENCER_ON)
+        {
+            return LIGHTS_ON;
         }
-        if(b == -121 || b == -29 || b == -16){
-            return "OFF";
+        if(byteLightsState == MANUAL_OFF || byteLightsState == CAMARA_OFF || byteLightsState == INFLUENCER_OFF)
+        {
+            return LIGHTS_OFF;
         }
-        return b+"";
+        return byteLightsState+"";
     }
     @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
-    public String getValueReadOLD() throws IOException {
+    public String getValueReadOLD() throws IOException
+    {
         InputStream inputStream = mmSocket.getInputStream();
-
-        //byte[] buffer = new byte[20];
         int bytes = 0;
-        String readMessage = "";
-        byte[] buffer = new byte[1024];
+        byte[] buffer = new byte[TOTAL_BYTES_SIZE];
         int numberOfReadings = 0; //to control the number of readings from the Arduino
+        String readMessage = "";
 
-        while (numberOfReadings < 1) {
+        while (numberOfReadings < 1)
+        {
             buffer[bytes] = (byte) inputStream.read();
-            // If I detect a "\n" means I already read a full measurement
-            readMessage = new String(buffer, 0, bytes);
+            readMessage = new String(buffer, 0, bytes); // If I detect a "\n" means I already read a full measurement
             Log.d(TAG, "buffer[bytes] = " + readMessage );
-            if (buffer[bytes] == '\n') {
+            if (buffer[bytes] == '\n')
+            {
                 readMessage = new String(buffer, 0, bytes);
-                Log.d(TAG, "arduino dijo:" + readMessage);
-                //Value to be read by the Observer streamed by the Obervable
+                Log.d(TAG, "Message: " + readMessage); //Value to be read by the Observer streamed by the Obervable
                 bytes = 0;
                 numberOfReadings++;
-            } else {
+            } else
+            {
                 bytes++;
             }
         }

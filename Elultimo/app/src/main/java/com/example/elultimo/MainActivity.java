@@ -1,16 +1,11 @@
 package com.example.elultimo;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
 import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -21,7 +16,10 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.IOException;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 import java.util.Set;
 import java.util.UUID;
 
@@ -30,14 +28,11 @@ public class MainActivity extends AppCompatActivity
     private static final String TAG = "InfluLogs";
     public static Handler handler;
     private final static int ERROR_READ = 0;
-    private final String[] permissions = {Manifest.permission.BLUETOOTH, Manifest.permission.BLUETOOTH_CONNECT, Manifest.permission.BLUETOOTH_ADMIN, Manifest.permission.BLUETOOTH_ADVERTISE, Manifest.permission.BLUETOOTH_SCAN};
-    private static final int REQUEST_ENABLE_BT = 1;
-    public static final int MULTIPLE_PERMISSIONS = 10;
     
     BluetoothDevice arduinoBTModule = null;
     UUID arduinoUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
-    ConnectThread connectThread;
-    ConnectedThread connectedThread;
+
+
 
 
     @Override
@@ -49,21 +44,18 @@ public class MainActivity extends AppCompatActivity
         BluetoothManager bluetoothManager = getSystemService(BluetoothManager.class);
         BluetoothAdapter bluetoothAdapter = bluetoothManager.getAdapter();
 
-        final Button button_search = (Button) findViewById(R.id.search);
-        final Button button_connect = (Button) findViewById(R.id.connect);
-        final TextView text_linked = (TextView) findViewById(R.id.linked_devices);
+        final Button button_search = findViewById(R.id.search);
+        final Button button_connect = findViewById(R.id.connect);
+        final TextView text_linked = findViewById(R.id.linked_devices);
 
         handler = new Handler(Looper.getMainLooper())
         {
             @Override
             public void handleMessage(Message msg)
             {
-                switch (msg.what)
-                {
-                    case ERROR_READ:
-                        String arduinoMsg = msg.obj.toString(); // Read message from Arduino
-                        text_linked.setText(arduinoMsg);
-                        break;
+                if (msg.what == ERROR_READ) {
+                    String arduinoMsg = msg.obj.toString(); // Read message from Arduino
+                    text_linked.setText(arduinoMsg);
                 }
             }
         };
@@ -80,7 +72,6 @@ public class MainActivity extends AppCompatActivity
                     if (!bluetoothAdapter.isEnabled())  //Check BT enabled. If disabled, we ask the user to enable BT
                     {
                         Log.d(TAG, "Bluetooth is disabled");
-                        Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                         Toast.makeText(getApplicationContext(), "Bluetooth no activado", Toast.LENGTH_SHORT).show();
                     }
                     else {
@@ -88,12 +79,10 @@ public class MainActivity extends AppCompatActivity
                         if (ContextCompat.checkSelfPermission(MainActivity.this,
                                 Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_DENIED)
                         {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
-                            {
-                                ActivityCompat.requestPermissions(MainActivity.this,
-                                        new String[]{Manifest.permission.BLUETOOTH_CONNECT}, 2);
-                                return;
-                            }
+                            int requestCode = 2;
+                            ActivityCompat.requestPermissions(MainActivity.this,
+                                    new String[]{Manifest.permission.BLUETOOTH_CONNECT}, requestCode);
+                            return;
                         }
                     }
                     String btDevicesString = "";
@@ -119,17 +108,18 @@ public class MainActivity extends AppCompatActivity
                                 arduinoUUID = device.getUuids()[0].getUuid();
                                 arduinoBTModule = device;
                                 //HC -05 Found, enabling the button to read results
-                                button_connect.setEnabled(true);
                             }
                             text_linked.setText(btDevicesString);
                         }
                     }
                 }
+                button_connect.setEnabled(true);
                 Log.d(TAG, "Button Pressed");
             }
         });
 
-        button_connect.setOnClickListener(new View.OnClickListener() {
+        button_connect.setOnClickListener(new View.OnClickListener()
+        {
             public void onClick(View v)
             {
                 // GO to another activity

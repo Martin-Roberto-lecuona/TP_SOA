@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Elultimo</string>
     <string name="nombre_hc05">BANIOLIMPIO</string>
     <string name="direccionMAC">20:17:02:27:16:68</string>
@@ -6,6 +6,11 @@
     <string name="SERVO_MANUAL_MODE">Manual</string>
     <string name="SERVO_CAM_MODE">Camara</string>
     <string name="AUTO_LIGHTS">AUTO</string>
-    <string name="LIGHTS_ON">ON</string>
     <string name="LIGHTS_OFF">OFF</string>
+    <string name="LIGHTS_ON">ON</string>
+    <string name="CHANGE_SERVO_MODE">S</string>
+    <string name="CHANGE_LIGHTS_MODE">Z</string>
+    <string name="MOVE_SERVO_LEFT">L</string>
+    <string name="MOVE_SERVO_RIGHT">R</string>
+    <string name="BT_ADDRESS" tools:ignore="TypographyDashes">00001101-0000-1000-8000-00805F9B34FB</string>
 </resources>

@@ -3,13 +3,13 @@ package com.example.elultimo;
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.content.res.Resources;
 import android.os.Build;
 import android.os.Handler;
 import android.util.Log;
 
 import androidx.annotation.RequiresApi;
 
-import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -25,7 +25,6 @@ public class ConnectThread extends Thread
     public static Handler handler;
     private final static int ERROR_READ = 0;
 
-    private String valueRead;
     private final static int TOTAL_BYTES_SIZE = 1024;
     private final static int INPUT_STREAM_BYTES_SIZE = 255;
     private final static byte MANUAL_AUTO = -122;
@@ -61,9 +60,7 @@ public class ConnectThread extends Thread
     @SuppressLint("MissingPermission")
     public void run()
     {
-        //InputStream mmInStream;
-        int bytes;
-        byte[] buffer = new byte[INPUT_STREAM_BYTES_SIZE];
+
 
         try
         {
@@ -84,7 +81,6 @@ public class ConnectThread extends Thread
             {
                 Log.e(TAG, "Could not close the client socket", closeException);
             }
-            return;
         }
     }
 
@@ -120,13 +116,11 @@ public class ConnectThread extends Thread
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     public byte getValueRead() throws IOException
     {
         InputStream inputStream = mmSocket.getInputStream();
         inputStream.skip(inputStream.available());
-        byte b = (byte) inputStream.read();
-        return b;
+        return (byte) inputStream.read();
     }
 
     public String getServoState(byte byteServoState)
@@ -134,15 +128,15 @@ public class ConnectThread extends Thread
         Log.d(TAG,byteServoState+"");
         if(byteServoState == MANUAL_AUTO || byteServoState == MANUAL_ON | byteServoState == MANUAL_OFF)
         {
-            return getString(R.string.SERVO_MANUAL_MODE);
+            return Resources.getSystem().getString(R.string.SERVO_MANUAL_MODE);
         }
         if(byteServoState == CAMARA_AUTO || byteServoState == CAMARA_ON || byteServoState == CAMARA_OFF)
         {
-            return getString(R.string.SERVO_CAM_MODE);
+            return Resources.getSystem().getString(R.string.SERVO_CAM_MODE);
         }
         if(byteServoState == INFLUENCER_AUTO || byteServoState ==  INFLUENCER_ON || byteServoState == INFLUENCER_OFF)
         {
-            return getString(R.string.SERVO_INFLUENCER_MODE);
+            return Resources.getSystem().getString(R.string.SERVO_INFLUENCER_MODE);
         }
         return byteServoState+"";
     }
@@ -151,19 +145,18 @@ public class ConnectThread extends Thread
         Log.d(TAG,byteLightsState+"");
         if(byteLightsState == MANUAL_AUTO || byteLightsState == CAMARA_AUTO || byteLightsState == INFLUENCER_AUTO)
         {
-            return getString(R.string.AUTO_LIGHTS);
+            return Resources.getSystem().getString(R.string.AUTO_LIGHTS);
         }
         if(byteLightsState == MANUAL_ON || byteLightsState == CAMARA_ON || byteLightsState == INFLUENCER_ON)
         {
-            return getString(R.string.LIGHTS_ON);
+            return Resources.getSystem().getString(R.string.LIGHTS_ON);
         }
         if(byteLightsState == MANUAL_OFF || byteLightsState == CAMARA_OFF || byteLightsState == INFLUENCER_OFF)
         {
-            return getString(R.string.LIGHTS_OFF);
+            return Resources.getSystem().getString(R.string.LIGHTS_OFF);
         }
         return byteLightsState+"";
     }
-    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
     public String getValueReadOLD() throws IOException
     {
         InputStream inputStream = mmSocket.getInputStream();

@@ -8,7 +8,7 @@ android {
 
     defaultConfig {
         applicationId "com.example.elultimo"
-        minSdk 31
+        minSdk 33
         targetSdk 33
         versionCode 1
         versionName "1.0"
@@ -31,6 +31,7 @@ android {
 dependencies {
 
     implementation 'androidx.appcompat:appcompat:1.6.1'
+    //noinspection GradleDependency
     implementation 'com.google.android.material:material:1.5.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
     testImplementation 'junit:junit:4.13.2'

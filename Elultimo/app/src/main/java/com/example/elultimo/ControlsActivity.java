@@ -51,6 +51,21 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
 
     TextView state;
 
+    private final static String SERVO_INFLUENCER_MODE = "Influencer";
+    private final static String SERVO_MANUAL_MODE = "Manual";
+
+    private final static String SERVO_CAM_MODE = "Camara";
+    private final static String AUTO_LIGHTS = "AUTO";
+    private final static String LIGHTS_ON = "ON";
+    private final static String LIGHTS_OFF = "OFF";
+
+    private final static String CHANGE_SERVO_MODE = "S";
+
+    private final static String CHANGE_LIGHTS_MODE = "Z";
+    private final static String MOVE_SERVO_LEFT = "L";
+    private final static String MOVE_SERVO_RIGHT = "R";
+
+
 
 
     @Override
@@ -141,7 +156,7 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
                 byte aux =  connectThread.getValueRead();
                 mode = connectThread.getServoState(aux);
                 state.setText("State:"+ mode);
-                if(Objects.equals(mode, getString(R.string.SERVO_MANUAL_MODE)))
+                if(Objects.equals(mode,SERVO_MANUAL_MODE))
                 {
                     button_left.setEnabled(true);
                     button_right.setEnabled(true);
@@ -156,9 +171,10 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
 
 
             }
-            catch (IOException e)
+            catch (Exception e)
             {
                 e.printStackTrace();
+                Log.d(TAG, e.getMessage());
             }
         }
 
@@ -166,12 +182,12 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
         {
             public void onClick(View v) {
                 try {
-                    connectThread.write(Resources.getSystem().getString(R.string.CHANGE_SERVO_MODE));
+                    connectThread.write(CHANGE_SERVO_MODE);
                     byte aux =  connectThread.getValueRead();
                     mode =  connectThread.getServoState(aux);
                     Log.d(TAG, mode);
                     state.setText("State:"+ mode);
-                    if(Objects.equals(mode, Resources.getSystem().getString(R.string.SERVO_MANUAL_MODE)))
+                    if(Objects.equals(mode, SERVO_MANUAL_MODE))
                     {
                         button_left.setEnabled(true);
                         button_right.setEnabled(true);
@@ -192,7 +208,7 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
         button_left.setOnClickListener(v -> {
             try
             {
-                connectThread.write(Resources.getSystem().getString(R.string.MOVE_SERVO_LEFT));
+                connectThread.write(MOVE_SERVO_LEFT);
                 Log.d(TAG, "left");
             }
             catch (IOException e)
@@ -204,7 +220,7 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
         button_right.setOnClickListener(v -> {
             try
             {
-                connectThread.write(Resources.getSystem().getString(R.string.MOVE_SERVO_RIGHT));
+                connectThread.write(MOVE_SERVO_RIGHT);
                 Log.d(TAG, "right");
             }
             catch (IOException e)
@@ -216,7 +232,7 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
         change_light_mode.setOnClickListener(v -> {
             try
             {
-                connectThread.write(Resources.getSystem().getString(R.string.CHANGE_LIGHTS_MODE));
+                connectThread.write(CHANGE_LIGHTS_MODE);
                 byte aux =  connectThread.getValueRead();
                 mode =  connectThread.getLightstate(aux);
                 Log.d(TAG, mode);
@@ -241,11 +257,11 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
                 Log.i(TAG, "cambio");
                 try
                 {
-                    connectThread.write(Resources.getSystem().getString(R.string.CHANGE_SERVO_MODE));
+                    connectThread.write(CHANGE_SERVO_MODE);
 
                     Log.d(TAG, "Cambio por sensor");
-                    if(Objects.equals(mode, Resources.getSystem().getString(R.string.SERVO_INFLUENCER_MODE))){
-                        //TODO ver q onda
+                    if(Objects.equals(mode, SERVO_INFLUENCER_MODE)){
+                        //TODO
                     }
 
                 }

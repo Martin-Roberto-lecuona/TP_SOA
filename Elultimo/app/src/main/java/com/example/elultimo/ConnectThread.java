@@ -33,9 +33,21 @@ public class ConnectThread extends Thread
     private final static byte CAMARA_AUTO = -8;
     private final static byte CAMARA_ON = -116;
     private final static byte CAMARA_OFF = -29;
-    private final static byte INFLUENCER_AUTO = -8;
-    private final static byte INFLUENCER_ON = -116;
-    private final static byte INFLUENCER_OFF = -29;
+    private final static byte INFLUENCER_AUTO = -32;
+    private final static byte INFLUENCER_ON = -125;
+    private final static byte INFLUENCER_OFF = -16;
+
+    private final static String SERVO_INFLUENCER_MODE = "Influencer";
+
+    private final static String SERVO_MANUAL_MODE = "Manual";
+
+    private final static String SERVO_CAM_MODE = "Camara";
+
+    private final static String AUTO_LIGHTS = "AUTO";
+
+    private final static String LIGHTS_ON = "ON";
+
+    private final static String LIGHTS_OFF = "OFF";
 
     @SuppressLint("MissingPermission")
     public ConnectThread(BluetoothDevice device, UUID MY_UUID, Handler handler)
@@ -68,7 +80,7 @@ public class ConnectThread extends Thread
             // until it succeeds or throws an exception.
             mmSocket.connect();
         }
-        catch (IOException connectException)
+        catch (Exception connectException)
         {
             // Unable to connect; close the socket and return.
             handler.obtainMessage(ERROR_READ, "Unable to connect to the BT device").sendToTarget();
@@ -77,7 +89,7 @@ public class ConnectThread extends Thread
             {
                 mmSocket.close();
             }
-            catch (IOException closeException)
+            catch (Exception closeException)
             {
                 Log.e(TAG, "Could not close the client socket", closeException);
             }
@@ -128,15 +140,15 @@ public class ConnectThread extends Thread
         Log.d(TAG,byteServoState+"");
         if(byteServoState == MANUAL_AUTO || byteServoState == MANUAL_ON | byteServoState == MANUAL_OFF)
         {
-            return Resources.getSystem().getString(R.string.SERVO_MANUAL_MODE);
+            return SERVO_MANUAL_MODE;
         }
         if(byteServoState == CAMARA_AUTO || byteServoState == CAMARA_ON || byteServoState == CAMARA_OFF)
         {
-            return Resources.getSystem().getString(R.string.SERVO_CAM_MODE);
+            return SERVO_CAM_MODE;
         }
         if(byteServoState == INFLUENCER_AUTO || byteServoState ==  INFLUENCER_ON || byteServoState == INFLUENCER_OFF)
         {
-            return Resources.getSystem().getString(R.string.SERVO_INFLUENCER_MODE);
+            return SERVO_INFLUENCER_MODE;
         }
         return byteServoState+"";
     }
@@ -145,15 +157,15 @@ public class ConnectThread extends Thread
         Log.d(TAG,byteLightsState+"");
         if(byteLightsState == MANUAL_AUTO || byteLightsState == CAMARA_AUTO || byteLightsState == INFLUENCER_AUTO)
         {
-            return Resources.getSystem().getString(R.string.AUTO_LIGHTS);
+            return AUTO_LIGHTS;
         }
         if(byteLightsState == MANUAL_ON || byteLightsState == CAMARA_ON || byteLightsState == INFLUENCER_ON)
         {
-            return Resources.getSystem().getString(R.string.LIGHTS_ON);
+            return LIGHTS_ON;
         }
         if(byteLightsState == MANUAL_OFF || byteLightsState == CAMARA_OFF || byteLightsState == INFLUENCER_OFF)
         {
-            return Resources.getSystem().getString(R.string.LIGHTS_OFF);
+            return LIGHTS_OFF;
         }
         return byteLightsState+"";
     }

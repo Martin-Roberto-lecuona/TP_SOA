@@ -75,8 +75,7 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
         final Button button_right = findViewById(R.id.button5);
         final Button change_light_mode = findViewById(R.id.change_light_mode);
         state = findViewById(R.id.estado);
-        final Button onOff = findViewById(R.id.OnOff);
-        final Button automatic = findViewById(R.id.Automatic);
+
 
         state.setText("Espere..");
 
@@ -138,7 +137,7 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
             {
                 button_change_mode.setEnabled(true);
                 change_light_mode.setEnabled(true);
-                onOff.setEnabled(true);
+
                 byte aux =  connectThread.getValueRead();
                 mode = connectThread.getServoState(aux);
                 state.setText("State:"+ mode);
@@ -155,21 +154,7 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
                 mode =  connectThread.getLightstate(aux);
                 Log.d(TAG, mode);
 
-                if(Objects.equals(mode, getString(R.string.AUTO_LIGHTS)))
-                {
-                    onOff.setEnabled(false);
-                    automatic.setEnabled(true);
-                }
-                else if(Objects.equals(mode, getString(R.string.LIGHTS_ON)))
-                {
-                    onOff.setEnabled(true);
-                    automatic.setEnabled(false);
-                }
-                else if(Objects.equals(mode, getString(R.string.LIGHTS_OFF)))
-                {
-                    onOff.setEnabled(false);
-                    automatic.setEnabled(false);
-                }
+
             }
             catch (IOException e)
             {
@@ -235,22 +220,6 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
                 byte aux =  connectThread.getValueRead();
                 mode =  connectThread.getLightstate(aux);
                 Log.d(TAG, mode);
-
-                if(Objects.equals(mode, Resources.getSystem().getString(R.string.AUTO_LIGHTS)))
-                {
-                    onOff.setEnabled(false);
-                    automatic.setEnabled(true);
-                }
-                else if(Objects.equals(mode, Resources.getSystem().getString(R.string.LIGHTS_ON)))
-                {
-                    onOff.setEnabled(true);
-                    automatic.setEnabled(false);
-                }
-                else if(Objects.equals(mode, Resources.getSystem().getString(R.string.LIGHTS_OFF)))
-                {
-                    onOff.setEnabled(false);
-                    automatic.setEnabled(false);
-                }
             }
             catch (IOException e)
             {

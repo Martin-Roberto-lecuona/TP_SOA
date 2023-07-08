@@ -5,90 +5,78 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ControlsActivity">
+    tools:context=".ControlsActivity"
+    android:background="@drawable/elbueno"
+    >
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:alpha="0.5"
-        android:contentDescription="fondo"
-        android:src="@drawable/fondoappconfig" />
+
     <Button
         android:id="@+id/change_mode"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="128dp"
+        android:layout_width="245dp"
+        android:layout_height="84dp"
+        android:layout_marginTop="320dp"
         android:text="Change Mode"
+        android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.481"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/change_light_mode"
-        android:layout_width="167dp"
-        android:layout_height="55dp"
+        android:layout_width="245dp"
+        android:layout_height="84dp"
         android:text="Change light mode"
+        android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.518"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/change_mode"
-        app:layout_constraintVertical_bias="0.126" />
+        app:layout_constraintVertical_bias="0.28" />
+
 
     <TextView
         android:id="@+id/estado"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="36dp"
-        android:text="Estado: a"
+        android:layout_width="252dp"
+        android:layout_height="46dp"
+        android:layout_marginTop="248dp"
+        android:text="Estado: a \nLuz: b"
+        android:textAlignment="center"
+        android:textSize="20sp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.496"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/button4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="68dp"
-        android:layout_marginBottom="160dp"
-        android:text="←"
-        android:textSize="50sp"
+        android:id="@+id/button5"
+        android:layout_width="100dp"
+        android:layout_height="84dp"
+        android:layout_marginEnd="80dp"
+        android:layout_marginBottom="40dp"
+        android:paddingVertical="0dp"
+        android:text="→"
+        android:textSize="45sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:gravity="center_horizontal"
+        />
 
     <Button
-        android:id="@+id/button5"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="88dp"
-        android:layout_marginBottom="160dp"
-        android:text="→"
-        android:textSize="50sp"
+
+        android:id="@+id/button4"
+        android:layout_width="100dp"
+        android:layout_height="84dp"
+        android:layout_marginEnd="232dp"
+        android:layout_marginBottom="40dp"
+        android:gravity="center_horizontal"
+        android:paddingVertical="0dp"
+        android:text="←"
+        android:textSize="45sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
-
-
-    <Button
-        android:id="@+id/Automatic"
-        android:layout_width="250px"
-        android:layout_height="150px"
-        android:layout_marginStart="88dp"
-        android:layout_marginTop="84dp"
-        android:text="AUTO"
-        app:layout_constraintStart_toStartOf="@+id/imageView"
-        app:layout_constraintTop_toBottomOf="@+id/change_light_mode" />
-
-    <Button
-        android:id="@+id/OnOff"
-        android:layout_width="250px"
-        android:layout_height="150px"
-        android:layout_marginStart="52dp"
-        android:layout_marginTop="84dp"
-        android:text="ON/OFF"
-        app:layout_constraintEnd_toEndOf="@+id/imageView"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/Automatic"
-        app:layout_constraintTop_toBottomOf="@+id/change_light_mode" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -31,7 +31,7 @@ SoftwareSerial mySerial(7, 8); // RX, TX
 #define STATE_INFLUENCER_OFF 3
 
 #define STATE_MANUAL_AUTO_LIGHTS 4
-#define STATE_MANUAL_ON 5
+#define STATE_MANUAL_ON 10
 #define STATE_MANUAL_OFF 6
 
 #define STATE_CAM_AUTO_LIGHTS 7
@@ -304,7 +304,8 @@ void FSM()
         break;
 
     }
-    mySerial.write(state);    
+    //mySerial.write(state); 
+    mySerial.print((char)state);   
 }
 
 int get_event()

@@ -27,27 +27,17 @@ public class ConnectThread extends Thread
 
     private String valueRead;
     private final static int TOTAL_BYTES_SIZE = 1024;
-    private final static int MANUAL_AUTO = -122;
-    private final static int MANUAL_ON = -113;
-    private final static int MANUAL_OFF = -121;
-    private final static int CAMARA_AUTO = -8;
-    private final static int CAMARA_ON = -116;
-    private final static int CAMARA_OFF = -29;
-    private final static int INFLUENCER_AUTO = -8;
-    private final static int INFLUENCER_ON = -116;
-    private final static int INFLUENCER_OFF = -29;
+    private final static int INPUT_STREAM_BYTES_SIZE = 255;
+    private final static byte MANUAL_AUTO = -122;
+    private final static byte MANUAL_ON = -113;
+    private final static byte MANUAL_OFF = -121;
+    private final static byte CAMARA_AUTO = -8;
+    private final static byte CAMARA_ON = -116;
+    private final static byte CAMARA_OFF = -29;
+    private final static byte INFLUENCER_AUTO = -8;
+    private final static byte INFLUENCER_ON = -116;
+    private final static byte INFLUENCER_OFF = -29;
 
-    private final static String SERVO_INFLUENCER_MODE = "Influencer";
-
-    private final static String SERVO_MANUAL_MODE = "Manual";
-
-    private final static String SERVO_CAM_MODE = "Camara";
-
-    private final static String AUTO_LIGHTS = "AUTO";
-
-    private final static String LIGHTS_ON = "ON";
-
-    private final static String LIGHTS_OFF = "OFF";
     @SuppressLint("MissingPermission")
     public ConnectThread(BluetoothDevice device, UUID MY_UUID, Handler handler)
     {
@@ -73,14 +63,13 @@ public class ConnectThread extends Thread
     {
         //InputStream mmInStream;
         int bytes;
-        byte[] buffer = new byte[256];
+        byte[] buffer = new byte[INPUT_STREAM_BYTES_SIZE];
 
         try
         {
             // Connect to the remote device through the socket. This call blocks
             // until it succeeds or throws an exception.
             mmSocket.connect();
-            //mmInStream = mmSocket.getInputStream();
         }
         catch (IOException connectException)
         {
@@ -145,15 +134,15 @@ public class ConnectThread extends Thread
         Log.d(TAG,byteServoState+"");
         if(byteServoState == MANUAL_AUTO || byteServoState == MANUAL_ON | byteServoState == MANUAL_OFF)
         {
-            return SERVO_MANUAL_MODE;
+            return getString(R.string.SERVO_MANUAL_MODE);
         }
         if(byteServoState == CAMARA_AUTO || byteServoState == CAMARA_ON || byteServoState == CAMARA_OFF)
         {
-            return SERVO_CAM_MODE;
+            return getString(R.string.SERVO_CAM_MODE);
         }
         if(byteServoState == INFLUENCER_AUTO || byteServoState ==  INFLUENCER_ON || byteServoState == INFLUENCER_OFF)
         {
-            return SERVO_INFLUENCER_MODE;
+            return getString(R.string.SERVO_INFLUENCER_MODE);
         }
         return byteServoState+"";
     }
@@ -162,15 +151,15 @@ public class ConnectThread extends Thread
         Log.d(TAG,byteLightsState+"");
         if(byteLightsState == MANUAL_AUTO || byteLightsState == CAMARA_AUTO || byteLightsState == INFLUENCER_AUTO)
         {
-            return AUTO_LIGHTS;
+            return getString(R.string.AUTO_LIGHTS);
         }
         if(byteLightsState == MANUAL_ON || byteLightsState == CAMARA_ON || byteLightsState == INFLUENCER_ON)
         {
-            return LIGHTS_ON;
+            return getString(R.string.LIGHTS_ON);
         }
         if(byteLightsState == MANUAL_OFF || byteLightsState == CAMARA_OFF || byteLightsState == INFLUENCER_OFF)
         {
-            return LIGHTS_OFF;
+            return getString(R.string.LIGHTS_OFF);
         }
         return byteLightsState+"";
     }

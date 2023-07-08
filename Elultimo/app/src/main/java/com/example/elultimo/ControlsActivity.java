@@ -162,7 +162,7 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
                 byte aux =  connectThread.getValueRead();
                 mode = connectThread.getServoState(aux);
                 state.setText("State:"+ mode);
-                if(mode == MANUAL_MODE)
+                if(mode == getString(R.string.SERVO_MANUAL_MODE))
                 {
                     button_left.setEnabled(true);
                     button_right.setEnabled(true);
@@ -175,17 +175,17 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
                 mode =  connectThread.getLightstate(aux);
                 Log.d(TAG, mode);
 
-                if(mode == AUTO_LIGHTS)
+                if(mode == getString(R.string.AUTO_LIGHTS))
                 {
                     onOff.setEnabled(false);
                     automatic.setEnabled(true);
                 }
-                else if(mode == LIGHTS_ON)
+                else if(mode == getString(R.string.LIGHTS_ON))
                 {
                     onOff.setEnabled(true);
                     automatic.setEnabled(false);
                 }
-                else if(mode == LIGHTS_OFF)
+                else if(mode == getString(R.string.LIGHTS_OFF))
                 {
                     onOff.setEnabled(false);
                     automatic.setEnabled(false);

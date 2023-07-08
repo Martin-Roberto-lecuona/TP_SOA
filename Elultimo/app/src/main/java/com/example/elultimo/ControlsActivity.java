@@ -22,6 +22,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.ImageButton;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,7 +31,8 @@ import java.io.IOException;
 import java.util.Set;
 import java.util.UUID;
 
-public class ControlsActivity extends AppCompatActivity implements SensorEventListener{
+public class ControlsActivity extends AppCompatActivity implements SensorEventListener
+{
 
     private static final String TAG = "InfluLogs";
     private final static float ACC = 30;
@@ -53,8 +55,23 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
     private String lights;
     BluetoothDevice arduinoBTModule = null;
 
+    private final static String INFLUENCER_MODE = "Influencer";
+    private final static String MANUAL_MODE = "Manual";
+
+    private final static String CAM_MODE = "Camara";
+    private final static String AUTO_LIGHTS = "AUTO";
+    private final static String LIGHTS_ON = "ON";
+    private final static String LIGHTS_OFF = "OFF";
+
+    private final static String CHANGE_SERVO_MODE = "S";
+
+    private final static String CHANGE_LIGHTS_MODE = "Z";
+    private final static String MOVE_SERVO_LEFT = "L";
+    private final static String MOVE_SERVO_RIGHT = "R";
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_controls);
         //obtengo el adaptador del bluethoot
@@ -75,108 +92,197 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
         final Button button_right = (Button) findViewById(R.id.button5);
         final Button change_light_mode = (Button) findViewById(R.id.change_light_mode);
         final TextView state = (TextView) findViewById(R.id.estado);
+        final Button onOff = (Button) findViewById(R.id.OnOff);
+        final Button automatic = (Button) findViewById(R.id.Automatic);
 
-        state.setText("Estado: Influencer auto lights");
-        mode = "Influencer";
-        button_change_mode.setEnabled(true);
-        button_left.setEnabled(false);
-        button_right.setEnabled(false);
+        state.setText("Espere..");
 
-        if (bluetoothAdapter == null) {
-            // Device doesn't support Bluetooth
+        if (bluetoothAdapter == null) // Device doesn't support Bluetooth
+        {
             Log.d(TAG, "Device doesn't support Bluetooth");
-        } else {
+        }
+        else
+        {
             Log.d(TAG, "Device support Bluetooth");
-            //Check BT enabled. If disabled, we ask the user to enable BT
-            if (!bluetoothAdapter.isEnabled()) {
+            if (!bluetoothAdapter.isEnabled()) //Check BT enabled. If disabled, we ask the user to enable BT
+            {
                 Log.d(TAG, "Bluetooth is disabled");
                 Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
                 Toast.makeText(getApplicationContext(), "Bluetooth no activado", Toast.LENGTH_SHORT).show();
-
-            } else {
+            }
+            else
+            {
                 Log.d(TAG, "Bluetooth is enabled");
-                if (ContextCompat.checkSelfPermission(ControlsActivity.this, android.Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_DENIED) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                if (ContextCompat.checkSelfPermission(ControlsActivity.this, android.Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_DENIED)
+                {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+                    {
                         ActivityCompat.requestPermissions(ControlsActivity.this, new String[]{Manifest.permission.BLUETOOTH_CONNECT}, 2);
                         return;
                     }
                 }
             }
+
             String btDevicesString = "";
             Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
 
-            if (pairedDevices.size() > 0) {
-                Log.d(TAG, "Entro aca");
-                // There are paired devices. Get the name and address of each paired device.
-                for (BluetoothDevice device : pairedDevices) {
+            if (pairedDevices.size() > 0)
+            {
+                for (BluetoothDevice device : pairedDevices) // There are paired devices. Get the name and address of each paired device.
+                {
                     String deviceName = device.getName();
                     String deviceHardwareAddress = device.getAddress(); // MAC address
-                    //Log.d(TAG, "deviceName:" + deviceName);
-                    //Log.d(TAG, "deviceHardwareAddress:" + deviceHardwareAddress);
                     //We append all devices to a String that we will display in the UI
                     btDevicesString = btDevicesString + deviceName + " || " + deviceHardwareAddress + "\n";
                     //If we find the HC 05 device (the Arduino BT module)
                     //We assign the device value to the Global variable BluetoothDevice
                     //We enable the button "Connect to HC 05 device"
-                    if (deviceName.equals(getString(R.string.nombre_hc05))) {
+                    if (deviceName.equals(getString(R.string.nombre_hc05)))
+                    {
                         Log.d(TAG, "HC-05 found");
                         arduinoUUID = device.getUuids()[0].getUuid();
                         arduinoBTModule = device;
                         //HC -05 Found, enabling the button to read results
-
                     }
                 }
             }
             // Perform action on click
             connectThread = new ConnectThread(arduinoBTModule, arduinoUUID, handler);
             connectThread.run();
-            if (connectThread.getMmSocket().isConnected()) {
+            if (connectThread.getMmSocket().isConnected())
+            {
                 Log.d(TAG, "Calling ConnectedThread class");
             }
-            Log.d(TAG, "CONECTO");
+            Log.d(TAG, "Bluetooth connected");
+            try
+            {
+                button_change_mode.setEnabled(true);
+                change_light_mode.setEnabled(true);
+                onOff.setEnabled(true);
+                byte aux =  connectThread.getValueRead();
+                mode = connectThread.getServoState(aux);
+                state.setText("State:"+ mode);
+                if(mode == getString(R.string.SERVO_MANUAL_MODE))
+                {
+                    button_left.setEnabled(true);
+                    button_right.setEnabled(true);
+                }
+                else
+                {
+                    button_left.setEnabled(false);
+                    button_right.setEnabled(false);
+                }
+                mode =  connectThread.getLightstate(aux);
+                Log.d(TAG, mode);
+
+                if(mode == getString(R.string.AUTO_LIGHTS))
+                {
+                    onOff.setEnabled(false);
+                    automatic.setEnabled(true);
+                }
+                else if(mode == getString(R.string.LIGHTS_ON))
+                {
+                    onOff.setEnabled(true);
+                    automatic.setEnabled(false);
+                }
+                else if(mode == getString(R.string.LIGHTS_OFF))
+                {
+                    onOff.setEnabled(false);
+                    automatic.setEnabled(false);
+                }
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
         }
-        button_change_mode.setOnClickListener(new View.OnClickListener(){
+
+        button_change_mode.setOnClickListener(new View.OnClickListener()
+        {
             public void onClick(View v) {
                 try {
-                    connectThread.write("S");
-                    mode =  connectThread.getState(mode);
+                    connectThread.write(CHANGE_SERVO_MODE);
+                    byte aux =  connectThread.getValueRead();
+                    mode =  connectThread.getServoState(aux);
                     Log.d(TAG, mode);
-                    state.setText("Estado:"+ mode +" "+ lights);
-
-                } catch (IOException e) {
+                    state.setText("State:"+ mode);
+                    if(mode == MANUAL_MODE)
+                    {
+                        button_left.setEnabled(true);
+                        button_right.setEnabled(true);
+                    }
+                    else
+                    {
+                        button_left.setEnabled(false);
+                        button_right.setEnabled(false);
+                    }
+                }
+                catch (IOException e)
+                {
                     e.printStackTrace();
                 }
             }
         });
 
-        button_left.setOnClickListener(new View.OnClickListener(){
+        button_left.setOnClickListener(new View.OnClickListener()
+        {
             public void onClick(View v) {
-                try {
-                    connectThread.write("L");
-                    Log.d(TAG, "Izquierda");
-                } catch (IOException e) {
+                try
+                {
+                    connectThread.write(MOVE_SERVO_LEFT);
+                    Log.d(TAG, "left");
+                }
+                catch (IOException e)
+                {
                     e.printStackTrace();
                 }
             }
         });
 
-        button_right.setOnClickListener(new View.OnClickListener(){
+        button_right.setOnClickListener(new View.OnClickListener()
+        {
             public void onClick(View v) {
-                try {
-                    connectThread.write("R");
-                    Log.d(TAG, "Derecha");
-                } catch (IOException e) {
+                try
+                {
+                    connectThread.write(MOVE_SERVO_RIGHT);
+                    Log.d(TAG, "right");
+                }
+                catch (IOException e)
+                {
                     e.printStackTrace();
                 }
             }
         });
 
-        change_light_mode.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v) {
-                try {
-                    connectThread.write("Z");
-                    Log.d(TAG, "Cambia luz");
-                } catch (IOException e) {
+        change_light_mode.setOnClickListener(new View.OnClickListener()
+        {
+            public void onClick(View v)
+            {
+                try
+                {
+                    connectThread.write(CHANGE_LIGHTS_MODE);
+                    byte aux =  connectThread.getValueRead();
+                    mode =  connectThread.getLightstate(aux);
+                    Log.d(TAG, mode);
+
+                    if(mode == AUTO_LIGHTS)
+                    {
+                        onOff.setEnabled(false);
+                        automatic.setEnabled(true);
+                    }
+                    else if(mode == LIGHTS_ON)
+                    {
+                        onOff.setEnabled(true);
+                        automatic.setEnabled(false);
+                    }
+                    else if(mode == LIGHTS_OFF)
+                    {
+                        onOff.setEnabled(false);
+                        automatic.setEnabled(false);
+                    }
+                }
+                catch (IOException e)
+                {
                     e.printStackTrace();
                 }
             }
@@ -184,23 +290,27 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
     }
 
     @Override
-    public void onSensorChanged(SensorEvent event) {
-
+    public void onSensorChanged(SensorEvent event)
+    {
         int sensorType = event.sensor.getType();
-
         float[] values = event.values;
 
-        if (sensorType == Sensor.TYPE_ACCELEROMETER) {
-            if ((Math.abs(values[0]) > ACC || Math.abs(values[1]) > ACC || Math.abs(values[2]) > ACC)) {
+        if (sensorType == Sensor.TYPE_ACCELEROMETER)
+        {
+            if ((Math.abs(values[0]) > ACC || Math.abs(values[1]) > ACC || Math.abs(values[2]) > ACC))
+            {
                 Log.i(TAG, "cambio");
-                try {
-                    connectThread.write("S");
+                try
+                {
+                    connectThread.write(CHANGE_SERVO_MODE);
                     Log.d(TAG, "Cambio por sensor");
                     if( mode == "Influencer"){
 
                     }
 
-                } catch (IOException e) {
+                }
+                catch (IOException e)
+                {
                     e.printStackTrace();
                 }
             }
@@ -211,7 +321,8 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
     //Handler que permite mostrar datos en el Layout al hilo secundario
     private Handler Handler_Msg_Hilo_Principal ()
     {
-        return new Handler() {
+        return new Handler()
+        {
             public void handleMessage(android.os.Message msg)
             {
                 //si se recibio un msj del hilo secundario
@@ -226,8 +337,6 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
                     if (endOfLineIndex > 0)
                     {
                         String dataInPrint = recDataString.substring(0, endOfLineIndex);
-                        //.setText(dataInPrint);
-
                         recDataString.delete(0, recDataString.length());
                     }
                 }
@@ -236,20 +345,16 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
     }
 
     @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
-    }
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {}
 
     private void registerSenser()
     {
         boolean done;
         done = sensor.registerListener(this, sensor.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
-
         if (!done)
         {
             Log.i(TAG, "not register");
         }
-
         Log.i(TAG, "register");
     }
 
@@ -258,6 +363,4 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
         sensor.unregisterListener(this);
         Log.i(TAG, "unregister");
     }
-
-
 }

@@ -2,13 +2,10 @@
     <string name="app_name">Elultimo</string>
     <string name="nombre_hc05">BANIOLIMPIO</string>
     <string name="direccionMAC">20:17:02:27:16:68</string>
-    <string name="STATE_INFLUENCER_AUTO_LIGHTS">A</string>
-    <string name="STATE_INFLUENCER_ON">B</string>
-    <string name="STATE_INFLUENCER_OFF">C</string>
-    <string name="STATE_MANUAL_AUTO_LIGHTS">D</string>
-    <string name="STATE_MANUAL_ON">E</string>
-    <string name="STATE_MANUAL_OFF">F</string>
-    <string name="STATE_CAM_AUTO_LIGHTS">G</string>
-    <string name="STATE_CAM_ON">H</string>
-    <string name="STATE_CAM_OFF">I</string>
+    <string name="SERVO_INFLUENCER_MODE">Influencer</string>
+    <string name="SERVO_MANUAL_MODE">Manual</string>
+    <string name="SERVO_CAM_MODE">Camara</string>
+    <string name="AUTO_LIGHTS">AUTO</string>
+    <string name="LIGHTS_ON">ON</string>
+    <string name="LIGHTS_OFF">OFF</string>
 </resources>

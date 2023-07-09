@@ -59,6 +59,7 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
     private final static String CHANGE_LIGHTS_MODE = "Z";
     private final static String MOVE_SERVO_LEFT = "L";
     private final static String MOVE_SERVO_RIGHT = "R";
+    @@ -190,16 +182,7 @@ public void onClick(View v) {
 
 
     @Override
@@ -165,7 +166,8 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
         button_change_mode.setOnClickListener(new View.OnClickListener()
         {
             public void onClick(View v) {
-                try {
+                try 
+                {
                     connectThread.write(CHANGE_SERVO_MODE);
                     byte aux =  connectThread.getValueRead();
                     mode =  connectThread.getServoState(aux);
@@ -260,7 +262,6 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
                     setManualButtons(button_left, button_right);
                     mode =  connectThread.getLightstate(aux);
                     lightState.setText("Light mode: " + mode);
-
                 }
                 catch (IOException e)
                 {
@@ -310,14 +311,13 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
         }
         Log.i(TAG, "register");
     }
-
-
     private void unregisterSenser()
     {
         //TODO hacer en el Ondestroy o ONstop
         sensor.unregisterListener(this);
         Log.i(TAG, "unregister");
     }
+
 
     public void setManualButtons(Button left, Button right)
     {
@@ -332,4 +332,3 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
             button_right.setEnabled(false);
         }
     }
-}

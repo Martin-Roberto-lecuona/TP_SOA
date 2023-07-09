@@ -24,7 +24,6 @@ public class ConnectThread extends Thread
     private static final String TAG = "FrugalLogs";
     public static Handler handler;
     private final static int ERROR_READ = 0;
-
     private final static int TOTAL_BYTES_SIZE = 1024;
     private final static byte MANUAL_AUTO = -128;
     private final static byte MANUAL_ON = -113;
@@ -36,17 +35,14 @@ public class ConnectThread extends Thread
     private final static byte INFLUENCER_ON = -125;
     private final static byte INFLUENCER_OFF = -16;
 
+
     private final static String SERVO_INFLUENCER_MODE = "Influencer";
-
     private final static String SERVO_MANUAL_MODE = "Manual";
-
     private final static String SERVO_CAM_MODE = "Camara";
-
     private final static String AUTO_LIGHTS = "AUTO";
-
     private final static String LIGHTS_ON = "ON";
-
     private final static String LIGHTS_OFF = "OFF";
+
 
     @SuppressLint("MissingPermission")
     public ConnectThread(BluetoothDevice device, UUID MY_UUID, Handler handler)
@@ -73,8 +69,7 @@ public class ConnectThread extends Thread
     {
         try
         {
-            // Connect to the remote device through the socket. This call blocks
-            // until it succeeds or throws an exception.
+            // Connect to the remote device through the socket. This call blocks until it succeeds or throws an exception.
             mmSocket.connect();
         }
         catch (Exception connectException)
@@ -114,10 +109,10 @@ public class ConnectThread extends Thread
     public void write(String input) throws IOException
     {
         OutputStream mmOutStream = mmSocket.getOutputStream();
-        byte[] msgBuffer = input.getBytes();           //converts entered String into bytes
+        byte[] msgBuffer = input.getBytes(); //converts entered String into bytes
         try
         {
-            mmOutStream.write(msgBuffer);                //write bytes over BT connection via outstream
+            mmOutStream.write(msgBuffer); //write bytes over BT connection via outstream
         }
         catch (IOException e)
         {

@@ -28,7 +28,6 @@ public class MainActivity extends AppCompatActivity
     private static final String TAG = "InfluLogs";
     public static Handler handler;
     private final static int ERROR_READ = 0;
-    
     BluetoothDevice arduinoBTModule = null;
     UUID arduinoUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
@@ -50,7 +49,8 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void handleMessage(Message msg)
             {
-                if (msg.what == ERROR_READ) {
+                if (msg.what == ERROR_READ)
+                {
                     String arduinoMsg = msg.obj.toString(); // Read message from Arduino
                     text_linked.setText(arduinoMsg);
                 }
@@ -65,7 +65,8 @@ public class MainActivity extends AppCompatActivity
                 {
                     Log.d(TAG, "Device doesn't support Bluetooth");
                 }
-                else {
+                else
+                {
                     Log.d(TAG, "Device support Bluetooth");
                     if (!bluetoothAdapter.isEnabled())  //Check BT enabled. If disabled, we ask the user to enable BT
                     {
@@ -124,6 +125,5 @@ public class MainActivity extends AppCompatActivity
                 MainActivity.this.startActivity(activityChangeIntent);
             }
         });
-
     }
 }

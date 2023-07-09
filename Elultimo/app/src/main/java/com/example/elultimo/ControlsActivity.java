@@ -309,13 +309,19 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
         }
         Log.i(TAG, "register");
     }
+    @Override
+    protected  void onDestroy()
+    {
+        super.onDestroy();
+        unregisterSenser();
+        connectThread.cancel();
+    }
     private void unregisterSenser()
     {
         //TODO hacer en el Ondestroy o ONstop
         sensor.unregisterListener(this);
         Log.i(TAG, "unregister");
     }
-
 
     public void setManualButtons(Button left, Button right)
     {

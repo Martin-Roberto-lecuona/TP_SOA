@@ -4,14 +4,11 @@ import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
-import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -50,6 +47,9 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
     BluetoothDevice arduinoBTModule = null;
 
     TextView state;
+    TextView lightState;
+    Button button_left;
+   Button button_right;
 
     private final static String SERVO_INFLUENCER_MODE = "Influencer";
     private final static String SERVO_MANUAL_MODE = "Manual";
@@ -60,12 +60,11 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
     private final static String LIGHTS_OFF = "OFF";
 
     private final static String CHANGE_SERVO_MODE = "S";
+    private final static String GET_SERVO_MODE = "X";
 
     private final static String CHANGE_LIGHTS_MODE = "Z";
     private final static String MOVE_SERVO_LEFT = "L";
     private final static String MOVE_SERVO_RIGHT = "R";
-
-
 
 
     @Override
@@ -86,10 +85,12 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
         BluetoothAdapter bluetoothAdapter = bluetoothManager.getAdapter();
 
         final Button button_change_mode = findViewById(R.id.change_mode);
-        final Button button_left = findViewById(R.id.button4);
-        final Button button_right = findViewById(R.id.button5);
+        button_left = findViewById(R.id.LeftButton);
+        button_right = findViewById(R.id.RightButton);
         final Button change_light_mode = findViewById(R.id.change_light_mode);
-        state = findViewById(R.id.estado);
+        final Button reload = findViewById(R.id.Reload);
+        lightState = findViewById(R.id.LightState);
+        state = findViewById(R.id.state);
 
 
         state.setText("Espere..");
@@ -152,10 +153,11 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
             {
                 button_change_mode.setEnabled(true);
                 change_light_mode.setEnabled(true);
-
+                connectThread.write(GET_SERVO_MODE);
                 byte aux =  connectThread.getValueRead();
                 mode = connectThread.getServoState(aux);
                 state.setText("State:"+ mode);
+
                 if(Objects.equals(mode,SERVO_MANUAL_MODE))
                 {
                     button_left.setEnabled(true);
@@ -167,6 +169,7 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
                     button_right.setEnabled(false);
                 }
                 mode =  connectThread.getLightstate(aux);
+                lightState.setText("Light mode: " + mode);
                 Log.d(TAG, mode);
 
 
@@ -235,11 +238,40 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
                 connectThread.write(CHANGE_LIGHTS_MODE);
                 byte aux =  connectThread.getValueRead();
                 mode =  connectThread.getLightstate(aux);
+                lightState.setText("Light mode: " + mode);
                 Log.d(TAG, mode);
             }
             catch (IOException e)
             {
                 e.printStackTrace();
+            }
+        });
+        reload.setOnClickListener(new View.OnClickListener()
+        {
+            public void onClick(View v) {
+                try {
+                    connectThread.write(GET_SERVO_MODE);
+                    byte aux =  connectThread.getValueRead();
+                    mode =  connectThread.getServoState(aux);
+                    Log.d(TAG, mode);
+                    state.setText("State:"+ mode);
+                    if(Objects.equals(mode, SERVO_MANUAL_MODE))
+                    {
+                        button_left.setEnabled(true);
+                        button_right.setEnabled(true);
+                    }
+                    else
+                    {
+                        button_left.setEnabled(false);
+                        button_right.setEnabled(false);
+                    }
+                    mode =  connectThread.getLightstate(aux);
+                    lightState.setText("Light mode: " + mode);
+                }
+                catch (IOException e)
+                {
+                    e.printStackTrace();
+                }
             }
         });
     }
@@ -258,11 +290,22 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
                 try
                 {
                     connectThread.write(CHANGE_SERVO_MODE);
-
-                    Log.d(TAG, "Cambio por sensor");
-                    if(Objects.equals(mode, SERVO_INFLUENCER_MODE)){
-                        //TODO
+                    byte aux =  connectThread.getValueRead();
+                    mode =  connectThread.getServoState(aux);
+                    Log.d(TAG, mode);
+                    state.setText("State:"+ mode);
+                    if(Objects.equals(mode, SERVO_MANUAL_MODE))
+                    {
+                        button_left.setEnabled(true);
+                        button_right.setEnabled(true);
                     }
+                    else
+                    {
+                        button_left.setEnabled(false);
+                        button_right.setEnabled(false);
+                    }
+                    mode =  connectThread.getLightstate(aux);
+                    lightState.setText("Light mode: " + mode);
 
                 }
                 catch (IOException e)

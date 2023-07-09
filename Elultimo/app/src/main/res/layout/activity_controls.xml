@@ -14,13 +14,13 @@
         android:id="@+id/change_mode"
         android:layout_width="245dp"
         android:layout_height="84dp"
-        android:layout_marginTop="320dp"
+        android:layout_marginTop="284dp"
         android:text="Change Mode"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.481"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
 
     <Button
         android:id="@+id/change_light_mode"
@@ -30,28 +30,27 @@
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.518"
+        app:layout_constraintHorizontal_bias="0.524"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/change_mode"
-        app:layout_constraintVertical_bias="0.28" />
-
+        app:layout_constraintVertical_bias="0.344" />
 
     <TextView
-        android:id="@+id/estado"
+        android:id="@+id/state"
         android:layout_width="252dp"
         android:layout_height="46dp"
-        android:layout_marginTop="248dp"
+        android:layout_marginTop="208dp"
         android:text="Estado: a \nLuz: b"
         android:textAlignment="center"
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.496"
+        app:layout_constraintHorizontal_bias="0.503"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/button5"
+        android:id="@+id/RightButton"
         android:layout_width="100dp"
         android:layout_height="84dp"
         android:layout_marginEnd="80dp"
@@ -66,7 +65,7 @@
 
     <Button
 
-        android:id="@+id/button4"
+        android:id="@+id/LeftButton"
         android:layout_width="100dp"
         android:layout_height="84dp"
         android:layout_marginEnd="232dp"
@@ -77,6 +76,38 @@
         android:textSize="45sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+
+    <Button
+        android:id="@+id/Reload"
+        android:layout_width="81dp"
+        android:layout_height="56dp"
+        android:layout_marginTop="120dp"
+        android:backgroundTint="@color/white"
+        android:minWidth="0px"
+        android:minHeight="0px"
+        android:text="↻"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.92"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/LightState"
+        android:layout_width="234dp"
+        android:layout_height="37dp"
+        android:text="Light mode:"
+        android:textAlignment="center"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/change_light_mode"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/change_mode"
+        app:layout_constraintVertical_bias="0.694" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

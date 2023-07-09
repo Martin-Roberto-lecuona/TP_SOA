@@ -35,8 +35,8 @@
 
     <Button
         android:id="@+id/search"
-        android:layout_width="264dp"
-        android:layout_height="59dp"
+        android:layout_width="274dp"
+        android:layout_height="83dp"
         android:layout_marginTop="80dp"
         android:text="Search linked BT devices"
         android:textSize="18sp"

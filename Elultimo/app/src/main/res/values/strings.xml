@@ -12,5 +12,6 @@
     <string name="CHANGE_LIGHTS_MODE">Z</string>
     <string name="MOVE_SERVO_LEFT">L</string>
     <string name="MOVE_SERVO_RIGHT">R</string>
+    <string name="GET_SERVO_MODE">X</string>
     <string name="BT_ADDRESS" tools:ignore="TypographyDashes">00001101-0000-1000-8000-00805F9B34FB</string>
 </resources>

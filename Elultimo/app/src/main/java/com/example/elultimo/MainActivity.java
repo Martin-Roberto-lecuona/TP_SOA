@@ -28,7 +28,6 @@ public class MainActivity extends AppCompatActivity
     private static final String TAG = "InfluLogs";
     public static Handler handler;
     private final static int ERROR_READ = 0;
-    
     BluetoothDevice arduinoBTModule = null;
     UUID arduinoUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 

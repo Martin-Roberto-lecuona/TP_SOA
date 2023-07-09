@@ -48,6 +48,8 @@ SoftwareSerial mySerial(7, 8); // RX, TX
 #define MOVE_SERVO_LEFT 303
 #define MOVE_SERVO_RIGHT 404
 #define CONTINUE 505
+#define GET_STATE_SERVO 606
+
 //----------------------------------------------
 
 // Commands
@@ -55,6 +57,8 @@ SoftwareSerial mySerial(7, 8); // RX, TX
 #define MOVE_RIGHT 'R'
 #define CHANGE_SERVO 'S'
 #define CHANGE_LIGHT 'Z'
+#define GET_STATE 'X'
+
 //----------------------------------------------
 
 Servo servo;
@@ -326,9 +330,12 @@ void FSM()
         }
 
         break;
-
     }
-    //mySerial.write(state);   
+    if (event == GET_STATE_SERVO)
+    {
+      mySerial.print((char)state);
+      Serial.println("estado: " + state );
+    }
 }
 
 int get_event()
@@ -381,6 +388,8 @@ int get_event()
 	
 	if (serial_input == MOVE_RIGHT)
 		return MOVE_SERVO_RIGHT;
+  if (serial_input == GET_STATE)
+    return GET_STATE_SERVO;
   
   return CONTINUE;
 }

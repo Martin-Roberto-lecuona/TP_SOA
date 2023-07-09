@@ -24,8 +24,8 @@ public class ConnectThread extends Thread
     private static final String TAG = "FrugalLogs";
     public static Handler handler;
     private final static int ERROR_READ = 0;
-
     private final static int TOTAL_BYTES_SIZE = 1024;
+
     private final static int INPUT_STREAM_BYTES_SIZE = 255;
     private final static byte MANUAL_AUTO = -128;
     private final static byte MANUAL_ON = -113;
@@ -37,17 +37,14 @@ public class ConnectThread extends Thread
     private final static byte INFLUENCER_ON = -125;
     private final static byte INFLUENCER_OFF = -16;
 
+    /*
     private final static String SERVO_INFLUENCER_MODE = "Influencer";
-
     private final static String SERVO_MANUAL_MODE = "Manual";
-
     private final static String SERVO_CAM_MODE = "Camara";
-
     private final static String AUTO_LIGHTS = "AUTO";
-
     private final static String LIGHTS_ON = "ON";
-
     private final static String LIGHTS_OFF = "OFF";
+    */
 
     @SuppressLint("MissingPermission")
     public ConnectThread(BluetoothDevice device, UUID MY_UUID, Handler handler)
@@ -72,12 +69,9 @@ public class ConnectThread extends Thread
     @SuppressLint("MissingPermission")
     public void run()
     {
-
-
         try
         {
-            // Connect to the remote device through the socket. This call blocks
-            // until it succeeds or throws an exception.
+            // Connect to the remote device through the socket. This call blocks until it succeeds or throws an exception.
             mmSocket.connect();
         }
         catch (Exception connectException)
@@ -117,10 +111,10 @@ public class ConnectThread extends Thread
     public void write(String input) throws IOException
     {
         OutputStream mmOutStream = mmSocket.getOutputStream();
-        byte[] msgBuffer = input.getBytes();           //converts entered String into bytes
+        byte[] msgBuffer = input.getBytes(); //converts entered String into bytes
         try
         {
-            mmOutStream.write(msgBuffer);                //write bytes over BT connection via outstream
+            mmOutStream.write(msgBuffer); //write bytes over BT connection via outstream
         }
         catch (IOException e)
         {
@@ -142,15 +136,15 @@ public class ConnectThread extends Thread
         Log.d(TAG,byteServoState+"");
         if(byteServoState == MANUAL_AUTO || byteServoState == MANUAL_ON || byteServoState == MANUAL_OFF)
         {
-            return SERVO_MANUAL_MODE;
+            return Resources.getSystem().getString(R.string.SERVO_MANUAL_MODE);;
         }
         if(byteServoState == CAMARA_AUTO || byteServoState == CAMARA_ON || byteServoState == CAMARA_OFF)
         {
-            return SERVO_CAM_MODE;
+            return Resources.getSystem().getString(R.string.SERVO_CAM_MODE);
         }
         if(byteServoState == INFLUENCER_AUTO || byteServoState ==  INFLUENCER_ON || byteServoState == INFLUENCER_OFF)
         {
-            return SERVO_INFLUENCER_MODE;
+            return Resources.getSystem().getString(R.string.SERVO_INFLUENCER_MODE);
         }
         return byteServoState+"";
     }
@@ -159,15 +153,15 @@ public class ConnectThread extends Thread
         Log.d(TAG,byteLightsState+"");
         if(byteLightsState == MANUAL_AUTO || byteLightsState == CAMARA_AUTO || byteLightsState == INFLUENCER_AUTO)
         {
-            return AUTO_LIGHTS;
+            return Resources.getSystem().getString(R.string.AUTO_LIGHTS);
         }
         if(byteLightsState == MANUAL_ON || byteLightsState == CAMARA_ON || byteLightsState == INFLUENCER_ON)
         {
-            return LIGHTS_ON;
+            return Resources.getSystem().getString(R.string.LIGHTS_ON);
         }
         if(byteLightsState == MANUAL_OFF || byteLightsState == CAMARA_OFF || byteLightsState == INFLUENCER_OFF)
         {
-            return LIGHTS_OFF;
+            return Resources.getSystem().getString(R.string.LIGHTS_OFF);
         }
         return byteLightsState+"";
     }
@@ -190,7 +184,8 @@ public class ConnectThread extends Thread
                 Log.d(TAG, "Message: " + readMessage); //Value to be read by the Observer streamed by the Obervable
                 bytes = 0;
                 numberOfReadings++;
-            } else
+            }
+            else
             {
                 bytes++;
             }

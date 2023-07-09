@@ -49,11 +49,11 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
     TextView state;
     TextView lightState;
     Button button_left;
-   Button button_right;
+    Button button_right;
 
+    /*
     private final static String SERVO_INFLUENCER_MODE = "Influencer";
     private final static String SERVO_MANUAL_MODE = "Manual";
-
     private final static String SERVO_CAM_MODE = "Camara";
     private final static String AUTO_LIGHTS = "AUTO";
     private final static String LIGHTS_ON = "ON";
@@ -65,14 +65,13 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
     private final static String CHANGE_LIGHTS_MODE = "Z";
     private final static String MOVE_SERVO_LEFT = "L";
     private final static String MOVE_SERVO_RIGHT = "R";
-
+    */
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_controls);
-
 
         //defino el Handler de comunicacion entre el hilo Principal  el secundario.
         //El hilo secundario va a mostrar informacion al layout atraves utilizando indeirectamente a este handler
@@ -153,12 +152,12 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
             {
                 button_change_mode.setEnabled(true);
                 change_light_mode.setEnabled(true);
-                connectThread.write(GET_SERVO_MODE);
+                connectThread.write(Resources.getSystem().getString(R.string.GET_SERVO_MODE));
                 byte aux =  connectThread.getValueRead();
                 mode = connectThread.getServoState(aux);
                 state.setText("State:"+ mode);
 
-                if(Objects.equals(mode,SERVO_MANUAL_MODE))
+                if(Objects.equals(mode,Resources.getSystem().getString(R.string.SERVO_MANUAL_MODE)))
                 {
                     button_left.setEnabled(true);
                     button_right.setEnabled(true);
@@ -171,8 +170,6 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
                 mode =  connectThread.getLightstate(aux);
                 lightState.setText("Light mode: " + mode);
                 Log.d(TAG, mode);
-
-
             }
             catch (Exception e)
             {
@@ -185,12 +182,12 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
         {
             public void onClick(View v) {
                 try {
-                    connectThread.write(CHANGE_SERVO_MODE);
+                    connectThread.write(Resources.getSystem().getString(R.string.CHANGE_SERVO_MODE));
                     byte aux =  connectThread.getValueRead();
                     mode =  connectThread.getServoState(aux);
                     Log.d(TAG, mode);
                     state.setText("State:"+ mode);
-                    if(Objects.equals(mode, SERVO_MANUAL_MODE))
+                    if(Objects.equals(mode, Resources.getSystem().getString(R.string.SERVO_MANUAL_MODE)))
                     {
                         button_left.setEnabled(true);
                         button_right.setEnabled(true);
@@ -211,7 +208,7 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
         button_left.setOnClickListener(v -> {
             try
             {
-                connectThread.write(MOVE_SERVO_LEFT);
+                connectThread.write(Resources.getSystem().getString(R.string.MOVE_SERVO_LEFT));
                 Log.d(TAG, "left");
             }
             catch (IOException e)
@@ -223,7 +220,7 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
         button_right.setOnClickListener(v -> {
             try
             {
-                connectThread.write(MOVE_SERVO_RIGHT);
+                connectThread.write(Resources.getSystem().getString(R.string.MOVE_SERVO_RIGHT));
                 Log.d(TAG, "right");
             }
             catch (IOException e)
@@ -235,7 +232,7 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
         change_light_mode.setOnClickListener(v -> {
             try
             {
-                connectThread.write(CHANGE_LIGHTS_MODE);
+                connectThread.write(Resources.getSystem().getString(R.string.CHANGE_LIGHTS_MODE));
                 byte aux =  connectThread.getValueRead();
                 mode =  connectThread.getLightstate(aux);
                 lightState.setText("Light mode: " + mode);
@@ -250,12 +247,12 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
         {
             public void onClick(View v) {
                 try {
-                    connectThread.write(GET_SERVO_MODE);
+                    connectThread.write(Resources.getSystem().getString(R.string.GET_SERVO_MODE));
                     byte aux =  connectThread.getValueRead();
                     mode =  connectThread.getServoState(aux);
                     Log.d(TAG, mode);
                     state.setText("State:"+ mode);
-                    if(Objects.equals(mode, SERVO_MANUAL_MODE))
+                    if(Objects.equals(mode, Resources.getSystem().getString(R.string.SERVO_MANUAL_MODE)))
                     {
                         button_left.setEnabled(true);
                         button_right.setEnabled(true);
@@ -289,12 +286,12 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
                 Log.i(TAG, "cambio");
                 try
                 {
-                    connectThread.write(CHANGE_SERVO_MODE);
+                    connectThread.write(Resources.getSystem().getString(R.string.CHANGE_SERVO_MODE));
                     byte aux =  connectThread.getValueRead();
                     mode =  connectThread.getServoState(aux);
                     Log.d(TAG, mode);
                     state.setText("State:"+ mode);
-                    if(Objects.equals(mode, SERVO_MANUAL_MODE))
+                    if(Objects.equals(mode, Resources.getSystem().getString(R.string.SERVO_MANUAL_MODE)))
                     {
                         button_left.setEnabled(true);
                         button_right.setEnabled(true);

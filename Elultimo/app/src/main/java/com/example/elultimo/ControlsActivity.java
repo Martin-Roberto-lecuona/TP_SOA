@@ -59,8 +59,6 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
     private final static String CHANGE_LIGHTS_MODE = "Z";
     private final static String MOVE_SERVO_LEFT = "L";
     private final static String MOVE_SERVO_RIGHT = "R";
-    @@ -190,16 +182,7 @@ public void onClick(View v) {
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -332,3 +330,4 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
             button_right.setEnabled(false);
         }
     }
+}

@@ -49,19 +49,11 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
     TextView state;
     TextView lightState;
     Button button_left;
-   Button button_right;
+    Button button_right;
 
-    private final static String SERVO_INFLUENCER_MODE = "Influencer";
     private final static String SERVO_MANUAL_MODE = "Manual";
-
-    private final static String SERVO_CAM_MODE = "Camara";
-    private final static String AUTO_LIGHTS = "AUTO";
-    private final static String LIGHTS_ON = "ON";
-    private final static String LIGHTS_OFF = "OFF";
-
     private final static String CHANGE_SERVO_MODE = "S";
     private final static String GET_SERVO_MODE = "X";
-
     private final static String CHANGE_LIGHTS_MODE = "Z";
     private final static String MOVE_SERVO_LEFT = "L";
     private final static String MOVE_SERVO_RIGHT = "R";
@@ -190,16 +182,7 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
                     mode =  connectThread.getServoState(aux);
                     Log.d(TAG, mode);
                     state.setText("State:"+ mode);
-                    if(Objects.equals(mode, SERVO_MANUAL_MODE))
-                    {
-                        button_left.setEnabled(true);
-                        button_right.setEnabled(true);
-                    }
-                    else
-                    {
-                        button_left.setEnabled(false);
-                        button_right.setEnabled(false);
-                    }
+                    setButtonsLeftAndRight(button_left, button_right);
                 }
                 catch (IOException e)
                 {
@@ -255,16 +238,7 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
                     mode =  connectThread.getServoState(aux);
                     Log.d(TAG, mode);
                     state.setText("State:"+ mode);
-                    if(Objects.equals(mode, SERVO_MANUAL_MODE))
-                    {
-                        button_left.setEnabled(true);
-                        button_right.setEnabled(true);
-                    }
-                    else
-                    {
-                        button_left.setEnabled(false);
-                        button_right.setEnabled(false);
-                    }
+                    setButtonsLeftAndRight(button_left, button_right);
                     mode =  connectThread.getLightstate(aux);
                     lightState.setText("Light mode: " + mode);
                 }
@@ -294,16 +268,7 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
                     mode =  connectThread.getServoState(aux);
                     Log.d(TAG, mode);
                     state.setText("State:"+ mode);
-                    if(Objects.equals(mode, SERVO_MANUAL_MODE))
-                    {
-                        button_left.setEnabled(true);
-                        button_right.setEnabled(true);
-                    }
-                    else
-                    {
-                        button_left.setEnabled(false);
-                        button_right.setEnabled(false);
-                    }
+                    setButtonsLeftAndRight(button_left, button_right);
                     mode =  connectThread.getLightstate(aux);
                     lightState.setText("Light mode: " + mode);
 
@@ -356,13 +321,24 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
         }
         Log.i(TAG, "register");
     }
-
-
-
     private void unregisterSenser()
     {
         //TODO hacer en el Ondestroy o ONstop
         sensor.unregisterListener(this);
         Log.i(TAG, "unregister");
+    }
+
+    public void setButtonsLeftAndRight(Button left, Button right)
+    {
+        if(Objects.equals(mode, SERVO_MANUAL_MODE))
+        {
+            left.setEnabled(true);
+            right.setEnabled(true);
+        }
+        else
+        {
+            left.setEnabled(false);
+            right.setEnabled(false);
+        }
     }
 }

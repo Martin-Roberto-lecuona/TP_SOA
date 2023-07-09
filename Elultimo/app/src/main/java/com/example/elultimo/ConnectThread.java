@@ -24,9 +24,7 @@ public class ConnectThread extends Thread
     private static final String TAG = "FrugalLogs";
     public static Handler handler;
     private final static int ERROR_READ = 0;
-
     private final static int TOTAL_BYTES_SIZE = 1024;
-    private final static int INPUT_STREAM_BYTES_SIZE = 255;
     private final static byte MANUAL_AUTO = -128;
     private final static byte MANUAL_ON = -113;
     private final static byte MANUAL_OFF = -121;
@@ -72,8 +70,6 @@ public class ConnectThread extends Thread
     @SuppressLint("MissingPermission")
     public void run()
     {
-
-
         try
         {
             // Connect to the remote device through the socket. This call blocks
@@ -190,7 +186,8 @@ public class ConnectThread extends Thread
                 Log.d(TAG, "Message: " + readMessage); //Value to be read by the Observer streamed by the Obervable
                 bytes = 0;
                 numberOfReadings++;
-            } else
+            }
+            else
             {
                 bytes++;
             }

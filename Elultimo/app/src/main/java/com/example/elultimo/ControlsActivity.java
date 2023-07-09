@@ -151,7 +151,7 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
                 byte aux =  connectThread.getValueRead();
                 mode = connectThread.getServoState(aux);
                 state.setText("State:"+ mode);
-                setButtonsLeftAndRight(button_left,button_right);
+                setManualButtons(button_left, button_right);
                 mode =  connectThread.getLightstate(aux);
                 lightState.setText("Light mode: " + mode);
                 Log.d(TAG, mode);
@@ -173,7 +173,7 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
                     mode =  connectThread.getServoState(aux);
                     Log.d(TAG, mode);
                     state.setText("State:"+ mode);
-                    setButtonsLeftAndRight(button_left, button_right);
+                    setManualButtons(button_left, button_right);
                 }
                 catch (IOException e)
                 {
@@ -229,7 +229,7 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
                     mode =  connectThread.getServoState(aux);
                     Log.d(TAG, mode);
                     state.setText("State:"+ mode);
-                    setButtonsLeftAndRight(button_left, button_right);
+                    setManualButtons(button_left, button_right);
                     mode =  connectThread.getLightstate(aux);
                     lightState.setText("Light mode: " + mode);
                 }
@@ -259,10 +259,9 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
                     mode =  connectThread.getServoState(aux);
                     Log.d(TAG, mode);
                     state.setText("State:"+ mode);
-                    setButtonsLeftAndRight(button_left, button_right);
+                    setManualButtons(button_left, button_right);
                     mode =  connectThread.getLightstate(aux);
                     lightState.setText("Light mode: " + mode);
-
                 }
                 catch (IOException e)
                 {
@@ -319,17 +318,17 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
         Log.i(TAG, "unregister");
     }
 
-    public void setButtonsLeftAndRight(Button left, Button right)
+
+    public void setManualButtons(Button left, Button right)
     {
         if(Objects.equals(mode, SERVO_MANUAL_MODE))
         {
-            left.setEnabled(true);
-            right.setEnabled(true);
+            button_left.setEnabled(true);
+            button_right.setEnabled(true);
         }
         else
         {
-            left.setEnabled(false);
-            right.setEnabled(false);
+            button_left.setEnabled(false);
+            button_right.setEnabled(false);
         }
     }
-}

@@ -107,7 +107,6 @@ public class MainActivity extends AppCompatActivity
                                 Log.d(TAG, "HC-05 found");
                                 arduinoUUID = device.getUuids()[0].getUuid();
                                 arduinoBTModule = device;
-                                //HC -05 Found, enabling the button to read results
                             }
                             text_linked.setText(btDevicesString);
                         }
@@ -122,7 +121,6 @@ public class MainActivity extends AppCompatActivity
         {
             public void onClick(View v)
             {
-                // GO to another activity
                 Intent activityChangeIntent = new Intent(MainActivity.this, ControlsActivity.class);
                 MainActivity.this.startActivity(activityChangeIntent);
             }

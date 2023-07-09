@@ -32,9 +32,6 @@ public class MainActivity extends AppCompatActivity
     BluetoothDevice arduinoBTModule = null;
     UUID arduinoUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -67,14 +64,16 @@ public class MainActivity extends AppCompatActivity
                 if (bluetoothAdapter == null) //Check if the phone supports BT
                 {
                     Log.d(TAG, "Device doesn't support Bluetooth");
-                } else {
+                }
+                else {
                     Log.d(TAG, "Device support Bluetooth");
                     if (!bluetoothAdapter.isEnabled())  //Check BT enabled. If disabled, we ask the user to enable BT
                     {
                         Log.d(TAG, "Bluetooth is disabled");
                         Toast.makeText(getApplicationContext(), "Bluetooth no activado", Toast.LENGTH_SHORT).show();
                     }
-                    else {
+                    else
+                    {
                         Log.d(TAG, "Bluetooth is enabled");
                         if (ContextCompat.checkSelfPermission(MainActivity.this,
                                 Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_DENIED)
@@ -107,7 +106,6 @@ public class MainActivity extends AppCompatActivity
                                 Log.d(TAG, "HC-05 found");
                                 arduinoUUID = device.getUuids()[0].getUuid();
                                 arduinoBTModule = device;
-                                //HC -05 Found, enabling the button to read results
                             }
                             text_linked.setText(btDevicesString);
                         }
@@ -122,7 +120,6 @@ public class MainActivity extends AppCompatActivity
         {
             public void onClick(View v)
             {
-                // GO to another activity
                 Intent activityChangeIntent = new Intent(MainActivity.this, ControlsActivity.class);
                 MainActivity.this.startActivity(activityChangeIntent);
             }

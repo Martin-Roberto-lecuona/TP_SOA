@@ -25,8 +25,6 @@ public class ConnectThread extends Thread
     public static Handler handler;
     private final static int ERROR_READ = 0;
     private final static int TOTAL_BYTES_SIZE = 1024;
-
-    private final static int INPUT_STREAM_BYTES_SIZE = 255;
     private final static byte MANUAL_AUTO = -128;
     private final static byte MANUAL_ON = -113;
     private final static byte MANUAL_OFF = -121;

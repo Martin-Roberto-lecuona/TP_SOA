@@ -314,6 +314,8 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
         Log.i(TAG, "register");
     }
 
+
+
     private void unregisterSenser()
     {
         //TODO hacer en el Ondestroy o ONstop

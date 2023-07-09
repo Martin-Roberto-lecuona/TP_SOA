@@ -27,7 +27,7 @@ public class ConnectThread extends Thread
 
     private final static int TOTAL_BYTES_SIZE = 1024;
     private final static int INPUT_STREAM_BYTES_SIZE = 255;
-    private final static byte MANUAL_AUTO = -122;
+    private final static byte MANUAL_AUTO = -128;
     private final static byte MANUAL_ON = -113;
     private final static byte MANUAL_OFF = -121;
     private final static byte CAMARA_AUTO = -8;
@@ -132,13 +132,15 @@ public class ConnectThread extends Thread
     {
         InputStream inputStream = mmSocket.getInputStream();
         inputStream.skip(inputStream.available());
-        return (byte) inputStream.read();
+        byte aux = (byte) inputStream.read();
+        Log.d(TAG, String.valueOf(aux));
+        return aux;
     }
 
     public String getServoState(byte byteServoState)
     {
         Log.d(TAG,byteServoState+"");
-        if(byteServoState == MANUAL_AUTO || byteServoState == MANUAL_ON | byteServoState == MANUAL_OFF)
+        if(byteServoState == MANUAL_AUTO || byteServoState == MANUAL_ON || byteServoState == MANUAL_OFF)
         {
             return SERVO_MANUAL_MODE;
         }

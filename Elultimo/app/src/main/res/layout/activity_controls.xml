@@ -40,7 +40,7 @@
         android:layout_width="252dp"
         android:layout_height="46dp"
         android:layout_marginTop="208dp"
-        android:text="Estado: a \nLuz: b"
+        android:text="State: a"
         android:textAlignment="center"
         android:textSize="20sp"
         android:textStyle="bold"

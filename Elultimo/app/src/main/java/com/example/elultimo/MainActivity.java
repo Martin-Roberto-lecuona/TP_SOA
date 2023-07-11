@@ -23,8 +23,7 @@ import androidx.core.content.ContextCompat;
 import java.util.Set;
 import java.util.UUID;
 
-public class MainActivity extends AppCompatActivity
-{
+public class MainActivity extends AppCompatActivity {
     private static final String TAG = "InfluLogs";
     public static Handler handler;
     private final static int ERROR_READ = 0;
@@ -32,8 +31,7 @@ public class MainActivity extends AppCompatActivity
     UUID arduinoUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -44,84 +42,67 @@ public class MainActivity extends AppCompatActivity
         final Button button_connect = findViewById(R.id.connect);
         final TextView text_linked = findViewById(R.id.linked_devices);
 
-        handler = new Handler(Looper.getMainLooper())
-        {
+        handler = new Handler(Looper.getMainLooper()) {
             @Override
-            public void handleMessage(Message msg)
-            {
-                if (msg.what == ERROR_READ)
-                {
-                    String arduinoMsg = msg.obj.toString(); // Read message from Arduino
+            public void handleMessage(Message msg) {
+                if (msg.what == ERROR_READ) {
+                    String arduinoMsg = msg.obj.toString(); // Leer mensaje desde Arduino
                     text_linked.setText(arduinoMsg);
                 }
             }
         };
 
-        button_search.setOnClickListener(new View.OnClickListener()
-        {
-            public void onClick(View view)
-            {
-                if (bluetoothAdapter == null) //Check if the phone supports BT
-                {
+        button_search.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                if (bluetoothAdapter == null) {
                     Log.d(TAG, "Device doesn't support Bluetooth");
+                    return;
                 }
-                else
-                {
-                    Log.d(TAG, "Device support Bluetooth");
-                    if (!bluetoothAdapter.isEnabled())  //Check BT enabled. If disabled, we ask the user to enable BT
-                    {
-                        Log.d(TAG, "Bluetooth is disabled");
-                        Toast.makeText(getApplicationContext(), "Bluetooth no activado", Toast.LENGTH_SHORT).show();
-                    }
-                    else
-                    {
-                        Log.d(TAG, "Bluetooth is enabled");
-                        if (ContextCompat.checkSelfPermission(MainActivity.this,
-                                Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_DENIED)
-                        {
-                            int requestCode = 2;
-                            ActivityCompat.requestPermissions(MainActivity.this,
-                                    new String[]{Manifest.permission.BLUETOOTH_CONNECT}, requestCode);
-                            return;
-                        }
-                    }
-                    String btDevicesString = "";
-                    Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
 
-                    if (pairedDevices.size() > 0)
-                    {
-                        for (BluetoothDevice device : pairedDevices)
-                        {
-                            // There are paired devices. Get the name and address of each paired device.
-                            String deviceName = device.getName();
-                            String deviceHardwareAddress = device.getAddress(); // MAC address
+                if (!bluetoothAdapter.isEnabled()) {
+                    Log.d(TAG, "Bluetooth is disabled");
+                    Toast.makeText(getApplicationContext(), "Bluetooth no activado", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
-                            //We append all devices to a String that we will display in the UI
-                            btDevicesString = btDevicesString + deviceName + " || " + deviceHardwareAddress + "\n";
+                if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.BLUETOOTH) == PackageManager.PERMISSION_DENIED) {
+                    ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.BLUETOOTH}, 2);
+                    return;
+                }
 
-                            //If we find the HC 05 device (the Arduino BT module)
-                            //We assign the device value to the Global variable BluetoothDevice
-                            //We enable the button "Connect to HC 05 device"
-                            if (deviceName.equals(getString(R.string.nombre_hc05)))
-                            {
-                                Log.d(TAG, "HC-05 found");
-                                arduinoUUID = device.getUuids()[0].getUuid();
-                                arduinoBTModule = device;
-                            }
-                            text_linked.setText(btDevicesString);
+                StringBuilder btDevicesString = new StringBuilder();
+                Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
+
+                if (pairedDevices.size() > 0) {
+                    for (BluetoothDevice device : pairedDevices) {
+                        String deviceName = device.getName();
+                        String deviceHardwareAddress = device.getAddress(); // Dirección MAC
+
+                        btDevicesString.append(deviceName).append(" || ").append(deviceHardwareAddress).append("\n");
+
+                        if (deviceName.equals(getString(R.string.nombre_hc05))) {
+                            Log.d(TAG, "HC-05 found");
+                            arduinoUUID = device.getUuids()[0].getUuid();
+                            arduinoBTModule = device;
                         }
                     }
                 }
+
+                text_linked.setText(btDevicesString.toString());
                 button_connect.setEnabled(true);
                 Log.d(TAG, "Button Pressed");
             }
         });
 
-        button_connect.setOnClickListener(new View.OnClickListener()
-        {
-            public void onClick(View v)
-            {
+        button_connect.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                if (arduinoBTModule == null) {
+                    Log.d(TAG, "Arduino BT module not found");
+                    return;
+                }
+
                 Intent activityChangeIntent = new Intent(MainActivity.this, ControlsActivity.class);
+                activityChangeIntent.putExtra("arduinoDevice", arduinoBTModule);
                 MainActivity.this.startActivity(activityChangeIntent);
             }
         });

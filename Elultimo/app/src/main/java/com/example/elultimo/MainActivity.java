@@ -110,13 +110,13 @@ public class MainActivity extends AppCompatActivity
                                 arduinoBTModule = device;
                                 deviceAdress = device.getAddress();
                                 Log.d(TAG, deviceAdress);
+                                button_connect.setEnabled(true);
+                                Log.d(TAG, "Button Pressed");
                             }
                             text_linked.setText(btDevicesString);
                         }
                     }
                 }
-                button_connect.setEnabled(true);
-                Log.d(TAG, "Button Pressed");
             }
         });
 

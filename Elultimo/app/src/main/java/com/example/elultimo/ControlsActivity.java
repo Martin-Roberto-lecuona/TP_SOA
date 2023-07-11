@@ -4,6 +4,8 @@ import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
+import android.bluetooth.BluetoothSocket;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -94,77 +96,95 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
         else
         {
             Log.d(TAG, "Device support Bluetooth");
-            if (!bluetoothAdapter.isEnabled()) //Check BT enabled. If disabled, we ask the user to enable BT
-            {
-                Log.d(TAG, "Bluetooth is disabled");
+        }
 
-                Toast.makeText(getApplicationContext(), "Bluetooth no activado", Toast.LENGTH_SHORT).show();
-            }
-            else
-            {
-                Log.d(TAG, "Bluetooth is enabled");
-                if (ContextCompat.checkSelfPermission(ControlsActivity.this, android.Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_DENIED)
-                {
-                    ActivityCompat.requestPermissions(ControlsActivity.this, new String[]{Manifest.permission.BLUETOOTH_CONNECT}, 2);
-                    return;
-                }
-            }
+    }
+    public void onResume() {
+        super.onResume();
 
-            StringBuilder btDevicesString = new StringBuilder();
-            Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
+        final Button button_change_mode = findViewById(R.id.change_mode);
+        button_left = findViewById(R.id.LeftButton);
+        button_right = findViewById(R.id.RightButton);
+        final Button change_light_mode = findViewById(R.id.change_light_mode);
+        final Button reload = findViewById(R.id.Reload);
+        lightState = findViewById(R.id.LightState);
+        state = findViewById(R.id.state);
 
-            if (pairedDevices.size() > 0)
+        Intent intent=getIntent();
+        Bundle extras=intent.getExtras();
+        BluetoothManager bluetoothManager = getSystemService(BluetoothManager.class);
+        BluetoothAdapter bluetoothAdapter = bluetoothManager.getAdapter();
+        BluetoothSocket mmSocket = null;
+        if (!bluetoothAdapter.isEnabled()) //Check BT enabled. If disabled, we ask the user to enable BT
+        {
+            Log.d(TAG, "Bluetooth is disabled");
+
+            Toast.makeText(getApplicationContext(), "Bluetooth no activado", Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
+            Log.d(TAG, "Bluetooth is enabled");
+            if (ContextCompat.checkSelfPermission(ControlsActivity.this, android.Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_DENIED)
             {
-                for (BluetoothDevice device : pairedDevices) // There are paired devices. Get the name and address of each paired device.
-                {
-                    String deviceName = device.getName();
-                    String deviceHardwareAddress = device.getAddress(); // MAC address
-                    //We append all devices to a String that we will display in the UI
-                    btDevicesString.append(deviceName).append(" || ").append(deviceHardwareAddress).append("\n");
-                    //If we find the HC 05 device (the Arduino BT module)
-                    //We assign the device value to the Global variable BluetoothDevice
-                    //We enable the button "Connect to HC 05 device"
-                    if (deviceName.equals(getString(R.string.nombre_hc05)))
-                    {
-                        Log.d(TAG, "HC-05 found");
-                        arduinoUUID = device.getUuids()[0].getUuid();
-                        arduinoBTModule = device;
-                        //HC -05 Found, enabling the button to read results
-                    }
-                }
-            }
-            // Perform action on click
-            connectThread = new ConnectThread(arduinoBTModule, arduinoUUID, handler);
-            connectThread.run();
-            if (connectThread.getMmSocket().isConnected())
-            {
-                Log.d(TAG, "Calling ConnectedThread class");
-            }
-            Log.d(TAG, "Bluetooth connected");
-            try
-            {
-                button_change_mode.setEnabled(true);
-                change_light_mode.setEnabled(true);
-                connectThread.write(GET_SERVO_MODE);
-                byte aux =  connectThread.getValueRead();
-                mode = connectThread.getServoState(aux);
-                state.setText("State:"+ mode);
-                setManualButtons(button_left, button_right);
-                mode =  connectThread.getLightstate(aux);
-                lightState.setText("Light mode: " + mode);
-                Log.d(TAG, mode);
-            }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-                Log.d(TAG, e.getMessage());
+                ActivityCompat.requestPermissions(ControlsActivity.this, new String[]{Manifest.permission.BLUETOOTH_CONNECT}, 2);
+                return;
             }
         }
+
+        StringBuilder btDevicesString = new StringBuilder();
+        Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
+        String deviceHardwareAddress ="";
+        if (pairedDevices.size() > 0)
+        {
+            for (BluetoothDevice device : pairedDevices) // There are paired devices. Get the name and address of each paired device.
+            {
+                String deviceName = device.getName();
+                deviceHardwareAddress = device.getAddress(); // MAC address
+                //We append all devices to a String that we will display in the UI
+                btDevicesString.append(deviceName).append(" || ").append(deviceHardwareAddress).append("\n");
+                //If we find the HC 05 device (the Arduino BT module)
+                //We assign the device value to the Global variable BluetoothDevice
+                //We enable the button "Connect to HC 05 device"
+                if (deviceName.equals(getString(R.string.nombre_hc05)))
+                {
+                    Log.d(TAG, "HC-05 found");
+                    arduinoUUID = device.getUuids()[0].getUuid();
+                    arduinoBTModule = device;
+                    //HC -05 Found, enabling the button to read results
+                }
+            }
+        }
+
+
+        //se realiza la conexion del Bluethoot crea y se conectandose a atraves de un socket
+        try
+        {
+            mmSocket = arduinoBTModule.createRfcommSocketToServiceRecord(BTMODULEUUID);
+            mmSocket.connect();
+        }
+        catch (IOException e)
+        {
+            Log.d(TAG, "La creacción del Socket fallo");
+            try
+            {
+                mmSocket.close();
+            }
+            catch (IOException e2)
+            {
+                //insert code to deal with this
+            }
+        }
+
+
+        //Una establecida la conexion con el Hc05 se crea el hilo secundario, el cual va a recibir
+        // los datos de Arduino atraves del bluethoot
+        connectThread = new ConnectThread(arduinoBTModule, arduinoUUID, handler);
+        connectThread.start();
 
         button_change_mode.setOnClickListener(new View.OnClickListener()
         {
             public void onClick(View v) {
-                try 
+                try
                 {
                     connectThread.write(CHANGE_SERVO_MODE);
                     byte aux =  connectThread.getValueRead();
@@ -237,8 +257,8 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
                 }
             }
         });
-    }
 
+    }
     @Override
     public void onSensorChanged(SensorEvent event)
     {

@@ -43,6 +43,10 @@ public class ConnectThread extends Thread
     private final static String LIGHTS_ON = "ON";
     private final static String LIGHTS_OFF = "OFF";
 
+    private InputStream mmInStream = null;
+    private OutputStream mmOutStream= null;
+
+
 
     @SuppressLint("MissingPermission")
     public ConnectThread(BluetoothDevice device, UUID MY_UUID, Handler handler)
@@ -64,9 +68,10 @@ public class ConnectThread extends Thread
         mmSocket = tmp;
     }
 
+
+
     @SuppressLint("MissingPermission")
-    public void run()
-    {
+    public void run() {
         try
         {
             // Connect to the remote device through the socket. This call blocks until it succeeds or throws an exception.
@@ -86,6 +91,13 @@ public class ConnectThread extends Thread
                 Log.e(TAG, "Could not close the client socket", closeException);
             }
         }
+        /*
+        while (true)
+        {
+            byte readMessage  = getValueRead();
+            bluetoothIn.obtainMessage(0, 1, -1, readMessage).sendToTarget();
+        }
+         */
     }
 
     // Closes the client socket and causes the thread to finish.

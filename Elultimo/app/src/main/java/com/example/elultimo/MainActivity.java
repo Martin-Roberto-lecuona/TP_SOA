@@ -26,6 +26,7 @@ import java.util.UUID;
 public class MainActivity extends AppCompatActivity
 {
     private static final String TAG = "InfluLogs";
+    private String deviceAdress = "";
     public static Handler handler;
     private final static int ERROR_READ = 0;
     BluetoothDevice arduinoBTModule = null;
@@ -102,11 +103,13 @@ public class MainActivity extends AppCompatActivity
                             //If we find the HC 05 device (the Arduino BT module)
                             //We assign the device value to the Global variable BluetoothDevice
                             //We enable the button "Connect to HC 05 device"
-                            if (deviceName.equals(getString(R.string.nombre_hc05)))
+                            if (deviceName.equals("DESKTOP-QD071B3"))
                             {
                                 Log.d(TAG, "HC-05 found");
                                 arduinoUUID = device.getUuids()[0].getUuid();
                                 arduinoBTModule = device;
+                                deviceAdress = device.getAddress();
+                                Log.d(TAG, deviceAdress);
                             }
                             text_linked.setText(btDevicesString);
                         }
@@ -122,6 +125,7 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View v)
             {
                 Intent activityChangeIntent = new Intent(MainActivity.this, ControlsActivity.class);
+                activityChangeIntent.putExtra("Direccion_Bluethoot",arduinoBTModule.getAddress());
                 MainActivity.this.startActivity(activityChangeIntent);
             }
         });

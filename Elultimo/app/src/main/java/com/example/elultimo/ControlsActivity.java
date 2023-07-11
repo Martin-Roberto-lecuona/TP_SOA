@@ -1,6 +1,7 @@
 package com.example.elultimo;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
@@ -24,12 +25,13 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
-public class ControlsActivity extends AppCompatActivity implements SensorEventListener
-{
+public class ControlsActivity extends AppCompatActivity implements SensorEventListener {
 
     private static final String TAG = "InfluLogs";
     private final static float ACC = 30;
@@ -39,7 +41,9 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
     private StringBuilder recDataString = new StringBuilder();
     // SPP UUID service  - Funciona en la mayoria de los dispositivos
     private static final UUID BTMODULEUUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
-    Handler bluetoothIn;
+    private Handler bluetoothIn;
+
+    BluetoothAdapter bluetoothAdapter = null;
     final int handlerState = 0; //used to identify handler message
     UUID arduinoUUID = BTMODULEUUID;
 
@@ -47,14 +51,15 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
 
     private String mode;
     BluetoothDevice arduinoBTModule = null;
-
+    private BluetoothSocket btSocket = null;
+    private static String address = null;
+    private ConnectedThread mConnectedThread;
     TextView state;
     TextView lightState;
     Button button_left;
     Button button_right;
 
     private final static String SERVO_MANUAL_MODE = "Manual";
-
     private final static String CHANGE_SERVO_MODE = "S";
     private final static String GET_SERVO_MODE = "X";
 
@@ -62,21 +67,18 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
     private final static String MOVE_SERVO_LEFT = "L";
     private final static String MOVE_SERVO_RIGHT = "R";
 
+    @SuppressLint("HandlerLeak")
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_controls);
-
-        //defino el Handler de comunicacion entre el hilo Principal  el secundario.
-        //El hilo secundario va a mostrar informacion al layout atraves utilizando indeirectamente a este handler
-        bluetoothIn = Handler_Msg_Hilo_Principal();
 
         sensor = (SensorManager) getSystemService(SENSOR_SERVICE);
         registerSenser();
 
-        BluetoothManager bluetoothManager = getSystemService(BluetoothManager.class);
-        BluetoothAdapter bluetoothAdapter = bluetoothManager.getAdapter();
+        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
+        bluetoothIn = Handler_Msg_Hilo_Principal();
 
         final Button button_change_mode = findViewById(R.id.change_mode);
         button_left = findViewById(R.id.LeftButton);
@@ -86,19 +88,51 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
         lightState = findViewById(R.id.LightState);
         state = findViewById(R.id.state);
 
-
         state.setText("Espere..");
 
-        if (bluetoothAdapter == null) // Device doesn't support Bluetooth
-        {
-            Log.d(TAG, "Device doesn't support Bluetooth");
-        }
-        else
-        {
-            Log.d(TAG, "Device support Bluetooth");
-        }
+        button_change_mode.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
 
+                    mConnectedThread.write(CHANGE_SERVO_MODE);
+                    //byte aux = connectThread.getValueRead();
+                    //mode = connectThread.getServoState(aux);
+                    //Log.d(TAG, mode);
+                    //state.setText("State:" + mode);
+                    setManualButtons(button_left, button_right);
+            }
+        });
+
+        button_left.setOnClickListener(v -> {
+            mConnectedThread.write(MOVE_SERVO_LEFT);
+            Log.d(TAG, "left");
+        });
+
+        button_right.setOnClickListener(v -> {
+            mConnectedThread.write(MOVE_SERVO_RIGHT);
+            Log.d(TAG, "right");
+        });
+
+        change_light_mode.setOnClickListener(v -> {
+                mConnectedThread.write(CHANGE_LIGHTS_MODE);
+                //byte aux = connectThread.getValueRead();
+                //mode = connectThread.getLightstate(aux);
+                lightState.setText("Light mode: " + mode);
+                Log.d(TAG, mode);
+        });
+        reload.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                    mConnectedThread.write(GET_SERVO_MODE);
+                    //byte aux = connectThread.getValueRead();
+                    //mode = connectThread.getServoState(aux);
+                    //Log.d(TAG, mode);
+                    //state.setText("State:" + mode);
+                    //setManualButtons(button_left, button_right);
+                    //mode = connectThread.getLightstate(aux);
+                    //lightState.setText("Light mode: " + mode);
+            }
+        });
     }
+
     public void onResume() {
         super.onResume();
 
@@ -110,191 +144,91 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
         lightState = findViewById(R.id.LightState);
         state = findViewById(R.id.state);
 
-        Intent intent=getIntent();
-        Bundle extras=intent.getExtras();
-        BluetoothManager bluetoothManager = getSystemService(BluetoothManager.class);
-        BluetoothAdapter bluetoothAdapter = bluetoothManager.getAdapter();
-        BluetoothSocket mmSocket = null;
-        if (!bluetoothAdapter.isEnabled()) //Check BT enabled. If disabled, we ask the user to enable BT
-        {
-            Log.d(TAG, "Bluetooth is disabled");
+        //Obtengo el parametro, aplicando un Bundle, que me indica la Mac Adress del HC05
+        Intent intent = getIntent();
+        Bundle extras = intent.getExtras();
+        address = extras.getString("Direccion_Bluethoot");
+        Log.d(TAG, "Obtuvo la direccion bluetooth"+ address);
 
-            Toast.makeText(getApplicationContext(), "Bluetooth no activado", Toast.LENGTH_SHORT).show();
+        BluetoothDevice device = bluetoothAdapter.getRemoteDevice(address);
+        //se realiza la conexion del Bluethoot crea y se conectandose a atraves de un socket
+        try {
+            Log.d(TAG, "entró al switch");
+            btSocket = createBluetoothSocket(device);
+        } catch (IOException e) {
+            Log.d(TAG, "Falló bluetooth");
         }
-        else
-        {
-            Log.d(TAG, "Bluetooth is enabled");
-            if (ContextCompat.checkSelfPermission(ControlsActivity.this, android.Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_DENIED)
-            {
-                ActivityCompat.requestPermissions(ControlsActivity.this, new String[]{Manifest.permission.BLUETOOTH_CONNECT}, 2);
+        Log.d(TAG, "salio del try");
+
+        // Establish the Bluetooth socket connection.
+        try {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                // TODO: Consider calling
+                //    ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                //                                          int[] grantResults)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
                 return;
             }
-        }
-
-        StringBuilder btDevicesString = new StringBuilder();
-        Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
-        String deviceHardwareAddress ="";
-        if (pairedDevices.size() > 0)
-        {
-            for (BluetoothDevice device : pairedDevices) // There are paired devices. Get the name and address of each paired device.
-            {
-                String deviceName = device.getName();
-                deviceHardwareAddress = device.getAddress(); // MAC address
-                //We append all devices to a String that we will display in the UI
-                btDevicesString.append(deviceName).append(" || ").append(deviceHardwareAddress).append("\n");
-                //If we find the HC 05 device (the Arduino BT module)
-                //We assign the device value to the Global variable BluetoothDevice
-                //We enable the button "Connect to HC 05 device"
-                if (deviceName.equals(getString(R.string.nombre_hc05)))
-                {
-                    Log.d(TAG, "HC-05 found");
-                    arduinoUUID = device.getUuids()[0].getUuid();
-                    arduinoBTModule = device;
-                    //HC -05 Found, enabling the button to read results
-                }
-            }
-        }
-
-
-        //se realiza la conexion del Bluethoot crea y se conectandose a atraves de un socket
-        try
-        {
-            mmSocket = arduinoBTModule.createRfcommSocketToServiceRecord(BTMODULEUUID);
-            mmSocket.connect();
-        }
-        catch (IOException e)
-        {
-            Log.d(TAG, "La creacción del Socket fallo");
-            try
-            {
-                mmSocket.close();
-            }
-            catch (IOException e2)
-            {
+            btSocket.connect();
+        } catch (IOException e) {
+            try {
+                btSocket.close();
+            } catch (IOException e2) {
                 //insert code to deal with this
             }
         }
-
-
         //Una establecida la conexion con el Hc05 se crea el hilo secundario, el cual va a recibir
         // los datos de Arduino atraves del bluethoot
-        connectThread = new ConnectThread(arduinoBTModule, arduinoUUID, handler);
-        connectThread.start();
+        mConnectedThread = new ConnectedThread(btSocket);
+        mConnectedThread.start();
 
-        button_change_mode.setOnClickListener(new View.OnClickListener()
-        {
-            public void onClick(View v) {
-                try
-                {
-                    connectThread.write(CHANGE_SERVO_MODE);
-                    byte aux =  connectThread.getValueRead();
-                    mode =  connectThread.getServoState(aux);
-                    Log.d(TAG, mode);
-                    state.setText("State:"+ mode);
-                    setManualButtons(button_left, button_right);
-                }
-                catch (IOException e)
-                {
-                    e.printStackTrace();
-                }
-            }
-        });
-
-        button_left.setOnClickListener(v -> {
-            try
-            {
-                connectThread.write(MOVE_SERVO_LEFT);
-                Log.d(TAG, "left");
-            }
-            catch (IOException e)
-            {
-                e.printStackTrace();
-            }
-        });
-
-        button_right.setOnClickListener(v -> {
-            try
-            {
-                connectThread.write(MOVE_SERVO_RIGHT);
-                Log.d(TAG, "right");
-            }
-            catch (IOException e)
-            {
-                e.printStackTrace();
-            }
-        });
-
-        change_light_mode.setOnClickListener(v -> {
-            try
-            {
-                connectThread.write(CHANGE_LIGHTS_MODE);
-                byte aux =  connectThread.getValueRead();
-                mode =  connectThread.getLightstate(aux);
-                lightState.setText("Light mode: " + mode);
-                Log.d(TAG, mode);
-            }
-            catch (IOException e)
-            {
-                e.printStackTrace();
-            }
-        });
-        reload.setOnClickListener(new View.OnClickListener()
-        {
-            public void onClick(View v) {
-                try {
-                    connectThread.write(GET_SERVO_MODE);
-                    byte aux =  connectThread.getValueRead();
-                    mode =  connectThread.getServoState(aux);
-                    Log.d(TAG, mode);
-                    state.setText("State:"+ mode);
-                    setManualButtons(button_left, button_right);
-                    mode =  connectThread.getLightstate(aux);
-                    lightState.setText("Light mode: " + mode);
-                }
-                catch (IOException e)
-                {
-                    e.printStackTrace();
-                }
-            }
-        });
-
+        //I send a character when resuming.beginning transmission to check device is connected
+        //If it is not an exception will be thrown in the write method and finish() will be called
+        mConnectedThread.write("x");
     }
+
     @Override
-    public void onSensorChanged(SensorEvent event)
+    //Cuando se ejecuta el evento onPause se cierra el socket Bluethoot, para no recibiendo datos
+    public void onPause()
     {
+        super.onPause();
+        try
+        {
+            //Don't leave Bluetooth sockets open when leaving activity
+            btSocket.close();
+        } catch (IOException e2) {
+            //insert code to deal with this
+        }
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
         int sensorType = event.sensor.getType();
         float[] values = event.values;
 
-        if (sensorType == Sensor.TYPE_ACCELEROMETER)
-        {
-            if ((Math.abs(values[0]) > ACC || Math.abs(values[1]) > ACC || Math.abs(values[2]) > ACC))
-            {
+        if (sensorType == Sensor.TYPE_ACCELEROMETER) {
+            if ((Math.abs(values[0]) > ACC || Math.abs(values[1]) > ACC || Math.abs(values[2]) > ACC)) {
                 Log.i(TAG, "cambio");
-                try
-                {
-                    connectThread.write(CHANGE_SERVO_MODE);
-                    byte aux =  connectThread.getValueRead();
-                    mode =  connectThread.getServoState(aux);
+
+                    mConnectedThread.write(CHANGE_SERVO_MODE);
+                    //byte aux = connectThread.getValueRead();
+                    //mode = connectThread.getServoState(aux);
                     Log.d(TAG, mode);
-                    state.setText("State:"+ mode);
-                    setManualButtons(button_left, button_right);
-                    mode =  connectThread.getLightstate(aux);
-                    lightState.setText("Light mode: " + mode);
-                }
-                catch (IOException e)
-                {
-                    e.printStackTrace();
-                }
+                    //state.setText("State:" + mode);
+                    //setManualButtons(button_left, button_right);
+                    //mode = connectThread.getLightstate(aux);
+                    //lightState.setText("Light mode: " + mode)
             }
         }
     }
 
 
     //Handler que permite mostrar datos en el Layout al hilo secundario
-    private Handler Handler_Msg_Hilo_Principal ()
-    {
-        return new Handler()
-        {
+    private Handler Handler_Msg_Hilo_Principal() {
+        return new Handler() {
             public void handleMessage(android.os.Message msg)
             {
                 //si se recibio un msj del hilo secundario
@@ -309,11 +243,27 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
                     if (endOfLineIndex > 0)
                     {
                         String dataInPrint = recDataString.substring(0, endOfLineIndex);
+                        state.setText(dataInPrint);
+                        Log.d(TAG, dataInPrint);
                         recDataString.delete(0, recDataString.length());
                     }
                 }
             }
         };
+    }
+
+    private BluetoothSocket createBluetoothSocket(BluetoothDevice device) throws IOException {
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details
+        }
+        return device.createRfcommSocketToServiceRecord(BTMODULEUUID);
     }
 
     @Override
@@ -354,6 +304,67 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
         {
             button_left.setEnabled(false);
             button_right.setEnabled(false);
+        }
+    }
+
+    private class ConnectedThread extends Thread
+    {
+        private final InputStream mmInStream;
+        private final OutputStream mmOutStream;
+
+        //Constructor de la clase del hilo secundario
+        public ConnectedThread(BluetoothSocket socket)
+        {
+            InputStream tmpIn = null;
+            OutputStream tmpOut = null;
+
+            try
+            {
+                //Create I/O streams for connection
+                tmpIn = socket.getInputStream();
+                tmpOut = socket.getOutputStream();
+            } catch (IOException e) { }
+
+            mmInStream = tmpIn;
+            mmOutStream = tmpOut;
+        }
+
+        //metodo run del hilo, que va a entrar en una espera activa para recibir los msjs del HC05
+        public void run()
+        {
+            byte[] buffer = new byte[256];
+            int bytes;
+
+            //el hilo secundario se queda esperando mensajes del HC05
+            while (true)
+            {
+                try
+                {
+                    //se leen los datos del Bluethoot
+                    bytes = mmInStream.read(buffer);
+                    String readMessage = new String(buffer, 0, bytes);
+
+                    //se muestran en el layout de la activity, utilizando el handler del hilo
+                    // principal antes mencionado
+                    bluetoothIn.obtainMessage(handlerState, bytes, -1, readMessage).sendToTarget();
+                } catch (IOException e) {
+                    break;
+                }
+            }
+        }
+
+
+        //write method
+        public void write(String input) {
+            byte[] msgBuffer = input.getBytes();           //converts entered String into bytes
+            try {
+                mmOutStream.write(msgBuffer);                //write bytes over BT connection via outstream
+            } catch (IOException e) {
+                //if you cannot write, close the application
+                //showToast("La conexion fallo");
+                Log.d(TAG, "La creacción del Socket fallo");
+                finish();
+            }
         }
     }
 }

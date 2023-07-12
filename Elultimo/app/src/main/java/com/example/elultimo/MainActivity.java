@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity
                             //If we find the HC 05 device (the Arduino BT module)
                             //We assign the device value to the Global variable BluetoothDevice
                             //We enable the button "Connect to HC 05 device"
-                            if (deviceName.equals("DESKTOP-QD071B3"))
+                            if (deviceName.equals(getString(R.string.nombre_hc05)))
                             {
                                 Log.d(TAG, "HC-05 found");
                                 arduinoUUID = device.getUuids()[0].getUuid();

@@ -35,7 +35,7 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
 
     private static final String TAG = "InfluLogs";
     private final static float ACC = 30;
-    ConnectThread connectThread;
+
     public static Handler handler;
 
     private StringBuilder recDataString = new StringBuilder();
@@ -92,13 +92,7 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
 
         button_change_mode.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-
-                    mConnectedThread.write(CHANGE_SERVO_MODE);
-                    //byte aux = connectThread.getValueRead();
-                    //mode = connectThread.getServoState(aux);
-                    //Log.d(TAG, mode);
-                    //state.setText("State:" + mode);
-                    setManualButtons(button_left, button_right);
+                mConnectedThread.write(CHANGE_SERVO_MODE);
             }
         });
 
@@ -113,22 +107,11 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
         });
 
         change_light_mode.setOnClickListener(v -> {
-                mConnectedThread.write(CHANGE_LIGHTS_MODE);
-                //byte aux = connectThread.getValueRead();
-                //mode = connectThread.getLightstate(aux);
-                lightState.setText("Light mode: " + mode);
-                Log.d(TAG, mode);
+            mConnectedThread.write(CHANGE_LIGHTS_MODE);
         });
         reload.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                    mConnectedThread.write(GET_SERVO_MODE);
-                    //byte aux = connectThread.getValueRead();
-                    //mode = connectThread.getServoState(aux);
-                    //Log.d(TAG, mode);
-                    //state.setText("State:" + mode);
-                    //setManualButtons(button_left, button_right);
-                    //mode = connectThread.getLightstate(aux);
-                    //lightState.setText("Light mode: " + mode);
+                mConnectedThread.write(GET_SERVO_MODE);
             }
         });
     }
@@ -163,13 +146,6 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
         // Establish the Bluetooth socket connection.
         try {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
                 return;
             }
             btSocket.connect();
@@ -184,10 +160,6 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
         // los datos de Arduino atraves del bluethoot
         mConnectedThread = new ConnectedThread(btSocket);
         mConnectedThread.start();
-
-        //I send a character when resuming.beginning transmission to check device is connected
-        //If it is not an exception will be thrown in the write method and finish() will be called
-        mConnectedThread.write("x");
     }
 
     @Override
@@ -197,10 +169,9 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
         super.onPause();
         try
         {
-            //Don't leave Bluetooth sockets open when leaving activity
             btSocket.close();
         } catch (IOException e2) {
-            //insert code to deal with this
+            e2.printStackTrace();
         }
     }
 
@@ -214,13 +185,7 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
                 Log.i(TAG, "cambio");
 
                     mConnectedThread.write(CHANGE_SERVO_MODE);
-                    //byte aux = connectThread.getValueRead();
-                    //mode = connectThread.getServoState(aux);
                     Log.d(TAG, mode);
-                    //state.setText("State:" + mode);
-                    //setManualButtons(button_left, button_right);
-                    //mode = connectThread.getLightstate(aux);
-                    //lightState.setText("Light mode: " + mode)
             }
         }
     }
@@ -246,6 +211,19 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
                         state.setText(dataInPrint);
                         Log.d(TAG, dataInPrint);
                         recDataString.delete(0, recDataString.length());
+                        setManualButtons(button_left, button_right,dataInPrint);
+                    }
+
+                    recDataString.append(readMessage);
+                    endOfLineIndex = recDataString.indexOf("\r\n");
+
+                    //cuando recibo toda una linea la muestro en el layout
+                    if (endOfLineIndex > 0)
+                    {
+                        String dataInPrint = recDataString.substring(endOfLineIndex +2,  recDataString.length());
+                        lightState.setText(dataInPrint);
+                        Log.d(TAG, dataInPrint);
+                        recDataString.delete(0, recDataString.length());
                     }
                 }
             }
@@ -255,13 +233,7 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
     private BluetoothSocket createBluetoothSocket(BluetoothDevice device) throws IOException {
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details
+
         }
         return device.createRfcommSocketToServiceRecord(BTMODULEUUID);
     }
@@ -284,7 +256,6 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
     {
         super.onDestroy();
         unregisterSenser();
-        connectThread.cancel();
     }
     private void unregisterSenser()
     {
@@ -293,7 +264,7 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
         Log.i(TAG, "unregister");
     }
 
-    public void setManualButtons(Button left, Button right)
+    public void setManualButtons(Button left, Button right, String mode)
     {
         if(Objects.equals(mode, SERVO_MANUAL_MODE))
         {
@@ -311,6 +282,25 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
     {
         private final InputStream mmInStream;
         private final OutputStream mmOutStream;
+        private final static int ERROR_READ = 0;
+        private final static int TOTAL_BYTES_SIZE = 1024;
+        private final static byte MANUAL_AUTO = -128;
+        private final static byte MANUAL_ON = -113;
+        private final static byte MANUAL_OFF = -121;
+        private final static byte CAMARA_AUTO = -8;
+        private final static byte CAMARA_ON = -116;
+        private final static byte CAMARA_OFF = -29;
+        private final static byte INFLUENCER_AUTO = -32;
+        private final static byte INFLUENCER_ON = -125;
+        private final static byte INFLUENCER_OFF = -16;
+
+
+        private final static String SERVO_INFLUENCER_MODE = "Influencer";
+        private final static String SERVO_MANUAL_MODE = "Manual";
+        private final static String SERVO_CAM_MODE = "Camara";
+        private final static String AUTO_LIGHTS = "AUTO";
+        private final static String LIGHTS_ON = "ON";
+        private final static String LIGHTS_OFF = "OFF";
 
         //Constructor de la clase del hilo secundario
         public ConnectedThread(BluetoothSocket socket)
@@ -332,8 +322,8 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
         //metodo run del hilo, que va a entrar en una espera activa para recibir los msjs del HC05
         public void run()
         {
-            byte[] buffer = new byte[256];
-            int bytes;
+            byte buffer;
+            int bytes = 1;
 
             //el hilo secundario se queda esperando mensajes del HC05
             while (true)
@@ -341,11 +331,9 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
                 try
                 {
                     //se leen los datos del Bluethoot
-                    bytes = mmInStream.read(buffer);
-                    String readMessage = new String(buffer, 0, bytes);
-
-                    //se muestran en el layout de la activity, utilizando el handler del hilo
-                    // principal antes mencionado
+                    buffer = getValueRead();
+                    String readMessage = getServoState(buffer) + "\r\n" + getLightstate(buffer) + "\r\n";
+                    Log.d(TAG,"readMessage: " + readMessage);
                     bluetoothIn.obtainMessage(handlerState, bytes, -1, readMessage).sendToTarget();
                 } catch (IOException e) {
                     break;
@@ -365,6 +353,49 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
                 Log.d(TAG, "La creacción del Socket fallo");
                 finish();
             }
+        }
+        public byte getValueRead() throws IOException
+        {
+            InputStream inputStream = btSocket.getInputStream();
+            inputStream.skip(inputStream.available());
+            byte aux = (byte) inputStream.read();
+            Log.d(TAG, String.valueOf(aux));
+            return aux;
+        }
+
+        public String getServoState(byte byteServoState)
+        {
+            Log.d(TAG,byteServoState+"");
+            if(byteServoState == MANUAL_AUTO || byteServoState == MANUAL_ON || byteServoState == MANUAL_OFF)
+            {
+                return SERVO_MANUAL_MODE;
+            }
+            if(byteServoState == CAMARA_AUTO || byteServoState == CAMARA_ON || byteServoState == CAMARA_OFF)
+            {
+                return SERVO_CAM_MODE;
+            }
+            if(byteServoState == INFLUENCER_AUTO || byteServoState ==  INFLUENCER_ON || byteServoState == INFLUENCER_OFF)
+            {
+                return SERVO_INFLUENCER_MODE;
+            }
+            return byteServoState+"";
+        }
+        public String getLightstate(byte byteLightsState)
+        {
+            Log.d(TAG,byteLightsState+"");
+            if(byteLightsState == MANUAL_AUTO || byteLightsState == CAMARA_AUTO || byteLightsState == INFLUENCER_AUTO)
+            {
+                return AUTO_LIGHTS;
+            }
+            if(byteLightsState == MANUAL_ON || byteLightsState == CAMARA_ON || byteLightsState == INFLUENCER_ON)
+            {
+                return LIGHTS_ON;
+            }
+            if(byteLightsState == MANUAL_OFF || byteLightsState == CAMARA_OFF || byteLightsState == INFLUENCER_OFF)
+            {
+                return LIGHTS_OFF;
+            }
+            return byteLightsState+"";
         }
     }
 }

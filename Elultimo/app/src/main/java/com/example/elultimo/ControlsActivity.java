@@ -31,7 +31,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
-public class ControlsActivity extends AppCompatActivity implements SensorEventListener {
+public class ControlsActivity extends AppCompatActivity implements SensorEventListener
+{
 
     private static final String TAG = "InfluLogs";
     private final static float ACC = 30;
@@ -69,7 +70,8 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
 
     @SuppressLint("HandlerLeak")
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_controls);
 
@@ -90,33 +92,41 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
 
         state.setText("Espere..");
 
-        button_change_mode.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
+        button_change_mode.setOnClickListener(new View.OnClickListener()
+        {
+            public void onClick(View v)
+            {
                 mConnectedThread.write(CHANGE_SERVO_MODE);
             }
         });
 
-        button_left.setOnClickListener(v -> {
+        button_left.setOnClickListener(v ->
+        {
             mConnectedThread.write(MOVE_SERVO_LEFT);
             Log.d(TAG, "left");
         });
 
-        button_right.setOnClickListener(v -> {
+        button_right.setOnClickListener(v ->
+        {
             mConnectedThread.write(MOVE_SERVO_RIGHT);
             Log.d(TAG, "right");
         });
 
-        change_light_mode.setOnClickListener(v -> {
+        change_light_mode.setOnClickListener(v ->
+        {
             mConnectedThread.write(CHANGE_LIGHTS_MODE);
         });
-        reload.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
+        reload.setOnClickListener(new View.OnClickListener()
+        {
+            public void onClick(View v)
+            {
                 mConnectedThread.write(GET_SERVO_MODE);
             }
         });
     }
 
-    public void onResume() {
+    public void onResume()
+    {
         super.onResume();
 
         final Button button_change_mode = findViewById(R.id.change_mode);
@@ -135,25 +145,31 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
 
         BluetoothDevice device = bluetoothAdapter.getRemoteDevice(address);
         //se realiza la conexion del Bluethoot crea y se conectandose a atraves de un socket
-        try {
+        try
+        {
             Log.d(TAG, "entró al switch");
             btSocket = createBluetoothSocket(device);
-        } catch (IOException e) {
+        } catch (IOException e)
+        {
             Log.d(TAG, "Falló bluetooth");
         }
         Log.d(TAG, "salio del try");
 
         // Establish the Bluetooth socket connection.
-        try {
+        try
+        {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
                 return;
             }
             btSocket.connect();
-        } catch (IOException e) {
-            try {
+        } catch (IOException e)
+        {
+            try
+            {
                 btSocket.close();
-            } catch (IOException e2) {
-                //insert code to deal with this
+            } catch (IOException e2)
+            {
+               e.printStackTrace();
             }
         }
         //Una establecida la conexion con el Hc05 se crea el hilo secundario, el cual va a recibir
@@ -170,18 +186,22 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
         try
         {
             btSocket.close();
-        } catch (IOException e2) {
+        } catch (IOException e2)
+        {
             e2.printStackTrace();
         }
     }
 
     @Override
-    public void onSensorChanged(SensorEvent event) {
+    public void onSensorChanged(SensorEvent event)
+    {
         int sensorType = event.sensor.getType();
         float[] values = event.values;
 
-        if (sensorType == Sensor.TYPE_ACCELEROMETER) {
-            if ((Math.abs(values[0]) > ACC || Math.abs(values[1]) > ACC || Math.abs(values[2]) > ACC)) {
+        if (sensorType == Sensor.TYPE_ACCELEROMETER)
+        {
+            if ((Math.abs(values[0]) > ACC || Math.abs(values[1]) > ACC || Math.abs(values[2]) > ACC))
+            {
                 Log.i(TAG, "cambio");
 
                     mConnectedThread.write(CHANGE_SERVO_MODE);
@@ -192,8 +212,10 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
 
 
     //Handler que permite mostrar datos en el Layout al hilo secundario
-    private Handler Handler_Msg_Hilo_Principal() {
-        return new Handler() {
+    private Handler Handler_Msg_Hilo_Principal()
+    {
+        return new Handler()
+        {
             public void handleMessage(android.os.Message msg)
             {
                 //si se recibio un msj del hilo secundario
@@ -230,7 +252,8 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
         };
     }
 
-    private BluetoothSocket createBluetoothSocket(BluetoothDevice device) throws IOException {
+    private BluetoothSocket createBluetoothSocket(BluetoothDevice device) throws IOException
+    {
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
 
@@ -239,7 +262,10 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
     }
 
     @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {}
+    public void onAccuracyChanged(Sensor sensor, int accuracy)
+    {
+
+    }
 
     private void registerSenser()
     {
@@ -343,11 +369,14 @@ public class ControlsActivity extends AppCompatActivity implements SensorEventLi
 
 
         //write method
-        public void write(String input) {
+        public void write(String input)
+        {
             byte[] msgBuffer = input.getBytes();           //converts entered String into bytes
-            try {
+            try
+            {
                 mmOutStream.write(msgBuffer);                //write bytes over BT connection via outstream
-            } catch (IOException e) {
+            } catch (IOException e)
+            {
                 //if you cannot write, close the application
                 //showToast("La conexion fallo");
                 Log.d(TAG, "La creacción del Socket fallo");

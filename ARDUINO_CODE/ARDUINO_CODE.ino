@@ -91,12 +91,12 @@ void setup()
   Serial.begin(9600);
   servo.attach(SERVO_PIN);
   servo.writeMicroseconds(angle_in_microsec);
-	pinMode(SERVO_BUTTON_MODE_PIN, INPUT);
+  pinMode(SERVO_BUTTON_MODE_PIN, INPUT);
   pinMode(LEFT_TRIGGER_PIN, OUTPUT);
   pinMode(RIGHT_TRIGGER_PIN, OUTPUT);
   pinMode(RIGHT_ECHO_PIN, INPUT);
   pinMode(LEFT_ECHO_PIN, INPUT);
-	pinMode(PHOTORESISTOR, INPUT);
+  pinMode(PHOTORESISTOR, INPUT);
   pinMode(PIN_NEOPIXEL, OUTPUT);
   pinMode(LED_BUTTON_MODE_PIN, INPUT);
 	
@@ -116,7 +116,7 @@ void FSM()
   event = get_event();
   switch (state)
   {
-	  case STATE_INFLUENCER_AUTO_LIGHTS:
+	case STATE_INFLUENCER_AUTO_LIGHTS:
       switch (event)
       {
         case CHANGE_SERVO_MODE:
@@ -128,7 +128,7 @@ void FSM()
           Serial.println("STATE_INFLUENCER_AUTO_LIGHTS -> STATE_INFLUENCER_ON");
           state = STATE_INFLUENCER_ON;
           mySerial.print((char)state); 
-			    turn_lights_on();
+		  turn_lights_on();
           break;
         case CONTINUE:
           mySerial.print((char)state); 
@@ -149,13 +149,13 @@ void FSM()
           Serial.println("STATE_MANUAL_AUTO_LIGHTS -> STATE_MANUAL_ON");
           state = STATE_MANUAL_ON;
           mySerial.print((char)state);
-			    turn_lights_on();
+		  turn_lights_on();
           break;
-		    case MOVE_SERVO_LEFT:
+		case MOVE_SERVO_LEFT:
           mySerial.print((char)state);
           manual_move(MOVE_LEFT_MULTI);
           break;
-		    case MOVE_SERVO_RIGHT:
+		case MOVE_SERVO_RIGHT:
           mySerial.print((char)state);
           manual_move(MOVE_RIGHT_MULTI);
           break;
@@ -164,29 +164,28 @@ void FSM()
           break;
       }
       break;
-	  case STATE_CAM_AUTO_LIGHTS:
+	case STATE_CAM_AUTO_LIGHTS:
       switch (event)
-        {
-          case CHANGE_SERVO_MODE:
-            Serial.println("STATE_CAM_AUTO_LIGHTS -> STATE_INFLUENCER_AUTO_LIGHTS");
+      {
+        case CHANGE_SERVO_MODE:
+			Serial.println("STATE_CAM_AUTO_LIGHTS -> STATE_INFLUENCER_AUTO_LIGHTS");
             state = STATE_INFLUENCER_AUTO_LIGHTS;
             mySerial.print((char)state); 
             break;
-          case CHANGE_LIGHTS_MODE:
+        case CHANGE_LIGHTS_MODE:
             mySerial.print((char)state);
             Serial.println("STATE_CAM_AUTO_LIGHTS -> STATE_CAM_ON");
             state = STATE_CAM_ON;
-			      turn_lights_on();
+		    turn_lights_on();
             break;
-          case CONTINUE:
+        case CONTINUE:
             automatic_mode_servo();
             automatic_led_room_brightness();
             break;
-        }
-        break;
-		
-	  case STATE_INFLUENCER_ON:
-      switch (event)
+	  }
+      break;
+	case STATE_INFLUENCER_ON:
+	  switch (event)
       {
         case CHANGE_SERVO_MODE:
           Serial.println("STATE_INFLUENCER_ON -> STATE_MANUAL_ON");
@@ -197,7 +196,7 @@ void FSM()
           Serial.println("STATE_INFLUENCER_ON -> STATE_INFLUENCER_OFF");
           state = STATE_INFLUENCER_OFF;
           mySerial.print((char)state); 
-			    turn_lights_off();
+		  turn_lights_off();
           break;
         case CONTINUE:
           automatic_trace_mode_servo();
@@ -216,13 +215,13 @@ void FSM()
           Serial.println("STATE_MANUAL_ON -> STATE_MANUAL_OFF");
           state = STATE_MANUAL_OFF;
           mySerial.print((char)state);
-			    turn_lights_off();
+		  turn_lights_off();
           break;
-		    case MOVE_SERVO_LEFT:
+		case MOVE_SERVO_LEFT:
           mySerial.print((char)state);
           manual_move(MOVE_LEFT_MULTI);
           break;
-		    case MOVE_SERVO_RIGHT:
+		case MOVE_SERVO_RIGHT:
           mySerial.print((char)state);
           manual_move(MOVE_RIGHT_MULTI);
           break;
@@ -230,7 +229,7 @@ void FSM()
           break;
       }
       break;
-	  case STATE_CAM_ON:
+	case STATE_CAM_ON:
       switch (event)
       {
         case CHANGE_SERVO_MODE:
@@ -242,14 +241,14 @@ void FSM()
           Serial.println("STATE_CAM_ON -> STATE_CAM_OFF");
           state = STATE_CAM_OFF;
           mySerial.print((char)state);
-			    turn_lights_off();
+		  turn_lights_off();
           break;
         case CONTINUE:
           automatic_mode_servo();
           break;
       }
       break;
-	  case STATE_INFLUENCER_OFF:
+	case STATE_INFLUENCER_OFF:
       switch (event)
       {
         case CHANGE_SERVO_MODE:
@@ -266,7 +265,7 @@ void FSM()
           automatic_trace_mode_servo();
           break;
       }
-      break;	
+	  break;	
     case STATE_MANUAL_OFF:
       switch (event)
       {
@@ -280,11 +279,11 @@ void FSM()
           state = STATE_MANUAL_AUTO_LIGHTS;
           mySerial.print((char)state);
           break;
-		    case MOVE_SERVO_LEFT:
+		case MOVE_SERVO_LEFT:
           mySerial.print((char)state);
           manual_move(MOVE_LEFT_MULTI);
           break;
-		    case MOVE_SERVO_RIGHT:
+		case MOVE_SERVO_RIGHT:
           mySerial.print((char)state);
           manual_move(MOVE_RIGHT_MULTI);
           break;
@@ -292,7 +291,7 @@ void FSM()
           break;
       }
       break;
-	  case STATE_CAM_OFF:
+	case STATE_CAM_OFF:
       switch (event)
       {
         case CHANGE_SERVO_MODE:
@@ -311,11 +310,11 @@ void FSM()
       }
       break;
   }
-    if (event == GET_STATE_SERVO)
-    {
-      mySerial.print((char)state);
-      Serial.println("estado: " + state );
-    }
+  if (event == GET_STATE_SERVO)
+  {
+    mySerial.print((char)state);
+    Serial.println("estado: " + state );
+  }
 }
 
 int get_event()
@@ -348,16 +347,16 @@ int get_event()
   cmp_angle_right = (angle_in_microsec > MAX_RIGHT_ANGLE);
 
   if (serial_input == CHANGE_SERVO)
-		return CHANGE_SERVO_MODE;
+    return CHANGE_SERVO_MODE;
   
   if (serial_input == CHANGE_LIGHT)
     return CHANGE_LIGHTS_MODE;
 	
-	if (serial_input == MOVE_LEFT)
-		return MOVE_SERVO_LEFT;
+  if (serial_input == MOVE_LEFT)
+	return MOVE_SERVO_LEFT;
 	
-	if (serial_input == MOVE_RIGHT)
-		return MOVE_SERVO_RIGHT;
+  if (serial_input == MOVE_RIGHT)
+	return MOVE_SERVO_RIGHT;
   
   if (serial_input == GET_STATE)
     return GET_STATE_SERVO;
@@ -403,13 +402,13 @@ void automatic_led_room_brightness()
 
 void turn_lights_on()
 {
-	Serial.println("turn_lights_on");
+  Serial.println("turn_lights_on");
   digitalWrite(PIN_NEOPIXEL,HIGH);
 }
 
 void turn_lights_off()
 {
-	Serial.println("turn_lights_off");
+  Serial.println("turn_lights_off");
   digitalWrite(PIN_NEOPIXEL,LOW);
 }
 
@@ -418,7 +417,7 @@ void manual_move(int multi)
   angle_in_microsec += (ANGLE_CHANGE*multi);
   if(angle_in_microsec < MAX_LEFT_ANGLE && angle_in_microsec > MAX_RIGHT_ANGLE )
   {
-		servo.writeMicroseconds(angle_in_microsec);
+	servo.writeMicroseconds(angle_in_microsec);
   }
   else if (multi == MOVE_LEFT_MULTI)
   {

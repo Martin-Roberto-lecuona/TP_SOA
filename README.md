@@ -40,12 +40,14 @@ Aquí se mostrará como usar la aplicación desde el teléfono android con nuest
 en inglés para facilitar la internacionalización del producto.
 ### Primera pantalla
 ![image](https://github.com/Martin-Roberto-lecuona/TP_SOA/assets/79217570/9aca3e95-53a7-428f-b4a1-aff22c6f0ec0)
+
 En esta primera pantalla podemos ver la lista de dispositivos que previamente 
 fueron conectados al teléfono, luego al presionar “Connect to Arduino” se 
 redireccionará a la siguiente pantalla y se conectará directamente al Bluetooth 
 integrado en el producto.
 ### Segunda pantalla
 ![image](https://github.com/Martin-Roberto-lecuona/TP_SOA/assets/79217570/50a7671f-df78-4091-a32b-e96998a28fc7)
+
 En esta pantalla se pueden ver 2 botones que permiten cambiar el modo del 
 embebido o el modo de las luces, ambos con un texto que indicará en qué modo 
 está actualmente. Luego arriba a la derecha se puede observar un botón para 

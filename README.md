@@ -29,8 +29,7 @@ case (no tapar). Tiene una distancia máxima de trabajo (150 cm) por lo que un o
 en cuenta. 
 ### Manual
 Este modo de uso está preparado para que el usuario encastre su smartphone al case y que éste se mueva a gusto 
-del usuario de manera manual. Al presionar los botones “SLEFT_BUTTON” y “SRIGHT_BUTTON” hará que 
-se mueva el case hacia la izquierda o hacia la derecha respectivamente. Tiene un límite de giro de 90º a la 
+del usuario de manera manual.Al enviar R o L se movera a derecha o izquierda respectivamente. Tiene un límite de giro de 90º a la 
 derecha e izquierda.
 ### Security Cam
 Este modo de uso está preparado para que el usuario encastre su smartphone o cámara web al case y que éste se 
